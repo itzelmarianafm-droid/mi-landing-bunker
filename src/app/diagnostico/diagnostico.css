@@ -1,0 +1,180 @@
+/* =====================================================================
+   Diagnóstico de los 6 Pilares — estilos scoped bajo .diag
+   Consola operativa / panel de diagnóstico táctico.
+   No afecta la landing (todo vive dentro de .diag).
+   ===================================================================== */
+
+.diag {
+  /* Tokens UI oficiales */
+  --bg: #0B0B0B;
+  --panel: #141414;
+  --panel-2: #1B1B1B;
+  --line: rgba(245, 243, 238, 0.12);
+  --line-strong: rgba(245, 243, 238, 0.28);
+  --text: #F5F3EE;
+  --muted: #B0ABA2;
+  --dim: #726D64;
+  --combat: #F25C1F;
+  --operative: #1F6B3A;
+
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Rejilla táctica de fondo */
+.diag-grid {
+  background-image:
+    linear-gradient(rgba(245, 243, 238, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 243, 238, 0.028) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* Foco visible */
+.diag :focus-visible {
+  outline: 2px solid var(--combat);
+  outline-offset: 2px;
+}
+
+/* Eyebrow / kicker */
+.diag-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--combat);
+}
+
+/* Panel base */
+.diag-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+/* CTA principal (naranja combate) */
+.diag-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--combat);
+  color: #0B0B0B;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 6px;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+.diag-cta:hover {
+  filter: brightness(1.08);
+}
+.diag-cta:active {
+  transform: translateY(1px);
+}
+
+/* Botón secundario / neutro */
+.diag-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: 1px solid var(--line-strong);
+  color: var(--text);
+  background: transparent;
+  border-radius: 6px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+.diag-btn:hover:not(:disabled) {
+  border-color: var(--combat);
+  background: rgba(242, 92, 31, 0.08);
+}
+.diag-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* Selector de escala 1–5 */
+.diag-scale {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.diag-scale-btn {
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line-strong);
+  border-radius: 6px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-weight: 700;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.diag-scale-btn:hover {
+  border-color: var(--combat);
+  color: var(--text);
+}
+.diag-scale-btn[aria-pressed='true'] {
+  background: var(--combat);
+  border-color: var(--combat);
+  color: #0B0B0B;
+}
+
+/* Chip */
+.diag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  padding: 3px 9px;
+  border-radius: 999px;
+  border: 1px solid var(--line);
+  color: var(--muted);
+  background: var(--panel-2);
+}
+
+/* Barra de progreso de pilar (resultado) */
+.diag-bar-track {
+  height: 8px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  overflow: hidden;
+}
+.diag-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+}
+
+/* Aparición suave por pantalla */
+.diag-screen {
+  animation: diag-fade 0.35s ease both;
+}
+@keyframes diag-fade {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Respeta reduce-motion */
+@media (prefers-reduced-motion: reduce) {
+  .diag-screen { animation: none; }
+  .diag-cta, .diag-btn, .diag-scale-btn { transition: none; }
+}
+
+/* Scrollbar sutil */
+.diag ::-webkit-scrollbar { width: 10px; height: 10px; }
+.diag ::-webkit-scrollbar-thumb {
+  background: #2B2B2B;
+  border-radius: 999px;
+}

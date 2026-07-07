@@ -1,0 +1,16 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="El Búnker del Vendedor">
+  <!-- Isotipo oficial (blanco negativo) — sin fondo, para paneles oscuros -->
+  <!-- Marco izquierdo en forma de corchete [ -->
+  <rect x="20" y="22" width="11" height="84" fill="#F5F3EE"/>
+  <rect x="20" y="22" width="34" height="11" fill="#F5F3EE"/>
+  <rect x="20" y="95" width="34" height="11" fill="#F5F3EE"/>
+  <!-- Marco derecho: remates separados (lado derecho abierto, look búnker) -->
+  <rect x="97" y="22" width="11" height="11" fill="#F5F3EE"/>
+  <rect x="97" y="95" width="11" height="11" fill="#F5F3EE"/>
+  <!-- Letra B central -->
+  <rect x="52" y="40" width="13" height="48" fill="#F5F3EE"/>
+  <path d="M 65 40 L 76 40 Q 88 40 88 52 Q 88 63 76 63 L 65 63 Z" fill="#F5F3EE"/>
+  <path d="M 65 65 L 78 65 Q 90 65 90 76 Q 90 88 76 88 L 65 88 Z" fill="#F5F3EE"/>
+  <path d="M 65 49 L 74 49 Q 79 49 79 52 Q 79 55 74 55 L 65 55 Z" fill="#0B0B0B"/>
+  <path d="M 65 73 L 75 73 Q 81 73 81 77 Q 81 80 75 80 L 65 80 Z" fill="#0B0B0B"/>
+</svg>

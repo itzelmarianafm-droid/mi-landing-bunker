@@ -17,6 +17,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://elbunkerdelvendedor.com"),
   title: "El Búnker del Vendedor — Vender no se improvisa, se entrena",
   description:
     "El centro de entrenamiento para vendedores independientes que ya se cansaron de improvisar, perseguir prospectos y depender de la suerte. En vivo, cada semana, con Paco Anguiano y Mariana Franco.",
