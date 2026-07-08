@@ -15,7 +15,7 @@ export const COACHES: CoachData[] = [
   {
     name: 'Paco Anguiano',
     role: 'Entrenador · Ventas',
-    // photo: '/reto/paco.png',  // TODO: agregar foto de Paco cuando esté disponible
+    photo: '/reto/paco.png',
     bio: '19 años formando equipos comerciales y líderes en México, Estados Unidos, Centroamérica y España. Autor del libro "Por supuesto que puedes vender". Especialista en comportamiento humano, comunicación persuasiva e IA aplicada a procesos comerciales. Ha acompañado a equipos a crecimientos superiores al 20%.',
   },
 ];
