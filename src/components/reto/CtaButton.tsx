@@ -1,8 +1,12 @@
 'use client';
 
-// URLs desde variables de entorno (con fallbacks seguros).
-const CHECKOUT_URL = process.env.NEXT_PUBLIC_CHECKOUT_URL || '';
-const DIAGNOSTICO_URL = process.env.NEXT_PUBLIC_DIAGNOSTICO_URL || '/diagnostico';
+// El diagnóstico vive en el mismo dominio → ruta relativa fija (a prueba de typos).
+const DIAGNOSTICO_URL = '/diagnostico';
+
+// El checkout sí puede ser un dominio externo (Hotmart). Solo se usa si es una
+// URL http(s) válida; si está mal escrita o vacía, cae a la sección de pago.
+const RAW_CHECKOUT = (process.env.NEXT_PUBLIC_CHECKOUT_URL || '').trim();
+const CHECKOUT_URL = /^https?:\/\//.test(RAW_CHECKOUT) ? RAW_CHECKOUT : '';
 
 type Action = 'checkout' | 'anchor' | 'diagnostico';
 

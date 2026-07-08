@@ -20,9 +20,9 @@ export default function DiagnosticoPage() {
   const [answers, setAnswers] = useState<number[][]>(emptyAnswers);
   const [submitting, setSubmitting] = useState(false);
 
-  // Por defecto usa la ruta relativa /reto (mismo dominio). La variable de
-  // entorno solo se necesita si el Reto vive en otro dominio.
-  const retoUrl = process.env.NEXT_PUBLIC_RETO_URL || '/reto';
+  // El Reto vive en el mismo dominio → ruta relativa fija (a prueba de typos
+  // en variables de entorno).
+  const retoUrl = '/reto';
 
   // El resultado solo se calcula una vez que hay respuestas completas.
   const result = useMemo(() => computeResult(answers), [answers]);
