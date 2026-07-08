@@ -105,7 +105,7 @@ export default function Gate({ onSubmit, submitting }: Props) {
           <div className="flex gap-2">
             <select
               aria-label="Código de país"
-              className={`${inputCls} w-[42%] appearance-none pr-2`}
+              className="w-28 shrink-0 appearance-none rounded-md border border-[var(--line-strong)] bg-[var(--panel-2)] px-3 py-3 text-[15px] text-[var(--text)] focus:border-[var(--combat)] focus:outline-none sm:w-32"
               value={countryIdx}
               onChange={(e) => setCountryIdx(Number(e.target.value))}
             >
@@ -116,7 +116,7 @@ export default function Gate({ onSubmit, submitting }: Props) {
               ))}
             </select>
             <input
-              className={`${inputCls} flex-1`}
+              className={`${inputCls} min-w-0 flex-1`}
               value={number}
               onChange={(e) => handleNumber(e.target.value)}
               placeholder="Número (solo dígitos)"
