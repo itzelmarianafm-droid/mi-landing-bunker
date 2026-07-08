@@ -1,0 +1,185 @@
+/* =====================================================================
+   Reto 7D · Activación Comercial — estilos scoped bajo .reto
+   Paleta oficial El Búnker. No afecta la landing ni el diagnóstico.
+   ===================================================================== */
+
+.reto {
+  --bg: #0B0B0B;
+  --panel: #141414;
+  --panel-2: #1B1B1B;
+  --line: rgba(245, 243, 238, 0.12);
+  --line-strong: rgba(245, 243, 238, 0.26);
+  --text: #F5F3EE;
+  --muted: #B0ABA2;
+  --dim: #726D64;
+  --combat: #F25C1F;
+  --operative: #1F6B3A;
+  --bone: #F5F3EE;
+
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-montserrat), system-ui, sans-serif;
+  letter-spacing: 0.01em;
+  -webkit-font-smoothing: antialiased;
+  scroll-behavior: smooth;
+  padding-bottom: 0;
+}
+
+/* En móvil, deja espacio para el sticky CTA inferior */
+@media (max-width: 640px) {
+  .reto {
+    padding-bottom: 72px;
+  }
+}
+
+.reto :focus-visible {
+  outline: 2px solid var(--combat);
+  outline-offset: 2px;
+}
+
+/* Rejilla táctica */
+.reto-grid {
+  background-image:
+    linear-gradient(rgba(245, 243, 238, 0.028) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(245, 243, 238, 0.028) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+
+/* Sección clara (blanco hueso) para dar ritmo */
+.reto-light {
+  background: var(--bone);
+  color: #141414;
+}
+.reto-light .reto-muted { color: #56514A; }
+.reto-light .reto-eyebrow { color: var(--combat); }
+
+/* Eyebrow */
+.reto-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.24em;
+  color: var(--combat);
+}
+
+.reto-muted { color: var(--muted); }
+
+/* Panel */
+.reto-panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+
+/* CTA principal (naranja combate) */
+.reto-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  background: var(--combat);
+  color: #0B0B0B;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  border-radius: 7px;
+  transition: filter 0.18s ease, transform 0.18s ease;
+}
+.reto-cta:hover { filter: brightness(1.08); }
+.reto-cta:active { transform: translateY(1px); }
+
+/* Botón/enlace secundario */
+.reto-link {
+  color: var(--combat);
+  font-weight: 600;
+  transition: opacity 0.18s ease;
+}
+.reto-link:hover { opacity: 0.8; }
+
+/* Corner brackets tácticos */
+.reto-brackets { position: relative; }
+.reto-brackets::before,
+.reto-brackets::after {
+  content: '';
+  position: absolute;
+  width: 18px;
+  height: 18px;
+  border-color: var(--combat);
+  pointer-events: none;
+}
+.reto-brackets::before { top: -1px; left: -1px; border-top: 2px solid; border-left: 2px solid; }
+.reto-brackets::after { bottom: -1px; right: -1px; border-bottom: 2px solid; border-right: 2px solid; }
+
+/* Foto de coach en B&N */
+.reto-coach-photo {
+  filter: grayscale(1) contrast(1.05);
+  object-fit: cover;
+  object-position: top;
+}
+
+/* Pills de la cadena comercial */
+.reto-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 7px 14px;
+  border-radius: 999px;
+  border: 1px solid var(--line-strong);
+  background: var(--panel-2);
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+/* FAQ nativo <details> */
+.reto-faq {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+  overflow: hidden;
+}
+.reto-faq + .reto-faq { margin-top: 10px; }
+.reto-faq summary {
+  cursor: pointer;
+  list-style: none;
+  padding: 18px 20px;
+  font-weight: 600;
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  align-items: center;
+}
+.reto-faq summary::-webkit-details-marker { display: none; }
+.reto-faq summary::after {
+  content: '+';
+  color: var(--combat);
+  font-size: 1.4rem;
+  font-weight: 700;
+  transition: transform 0.2s ease;
+  line-height: 1;
+}
+.reto-faq[open] summary::after { transform: rotate(45deg); }
+.reto-faq .reto-faq-body {
+  padding: 0 20px 18px;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+/* Reveal al hacer scroll */
+.reto-reveal {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity 0.6s ease, transform 0.6s ease;
+}
+.reto-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reto { scroll-behavior: auto; }
+  .reto-reveal { opacity: 1; transform: none; transition: none; }
+  .reto-cta { transition: none; }
+}
+
+.reto ::-webkit-scrollbar { width: 10px; height: 10px; }
+.reto ::-webkit-scrollbar-thumb { background: #2B2B2B; border-radius: 999px; }
