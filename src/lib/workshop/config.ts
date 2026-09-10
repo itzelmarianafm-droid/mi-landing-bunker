@@ -26,5 +26,7 @@ export const EVENT = {
 const RAW_CHECKOUT = (process.env.NEXT_PUBLIC_WORKSHOP_CHECKOUT_URL || '').trim();
 export const CHECKOUT_URL = /^https?:\/\//.test(RAW_CHECKOUT) ? RAW_CHECKOUT : '';
 
-// VSL: embed de YouTube/Vimeo/Wistia. Si no está, se muestra placeholder.
-export const VSL_EMBED_URL = (process.env.NEXT_PUBLIC_WORKSHOP_VSL_URL || '').trim();
+// VSL: embed de Vimeo (formato player). Se puede sobrescribir con
+// NEXT_PUBLIC_WORKSHOP_VSL_URL. Si se deja vacío, muestra placeholder.
+const VSL_DEFAULT = 'https://player.vimeo.com/video/1225523227';
+export const VSL_EMBED_URL = (process.env.NEXT_PUBLIC_WORKSHOP_VSL_URL || VSL_DEFAULT).trim();
