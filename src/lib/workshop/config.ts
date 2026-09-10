@@ -45,7 +45,7 @@ export const DEFAULT_CONFIG: WorkshopConfig = {
     makeTier('lote2', '20 al 30 de septiembre', 19, '2026-10-01T00:00:00-06:00'),
     makeTier('lote3', '1 y 2 de octubre', 29, '2026-10-03T00:00:00-06:00'),
   ],
-  checkoutUrl: 'https://pay.hotmart.com/A107551806Y?off=epkjgtlu',
+  checkoutUrl: 'https://pay.hotmart.com/A107551806Y?checkoutMode=10',
   vslUrl: 'https://player.vimeo.com/video/1225523227',
 };
 
