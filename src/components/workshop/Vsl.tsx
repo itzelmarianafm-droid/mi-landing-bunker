@@ -17,7 +17,7 @@ const PlayIcon = () => (
 );
 
 export default function Vsl() {
-  const { vslUrl } = useWorkshopConfig();
+  const { vslUrl, vslPoster } = useWorkshopConfig();
   const [playing, setPlaying] = useState(false);
 
   if (vslUrl) {
@@ -37,11 +37,25 @@ export default function Vsl() {
               setPlaying(true);
               track('vsl_play');
             }}
-            className="absolute inset-0 flex items-center justify-center"
+            className="group absolute inset-0 flex flex-col items-center justify-center gap-3"
             aria-label="Reproducir video"
           >
-            <span className="ws-play">
+            {/* Poster del video de fondo */}
+            {vslPoster && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={vslPoster}
+                alt="Vista previa del video"
+                className="absolute inset-0 h-full w-full object-cover"
+              />
+            )}
+            {/* Capa oscura para contraste (siempre, con o sin poster) */}
+            <span className="absolute inset-0 bg-black/45" aria-hidden />
+            <span className="ws-play relative z-10 transition-transform group-hover:scale-105">
               <PlayIcon />
+            </span>
+            <span className="relative z-10 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--text)]">
+              Ver el video
             </span>
           </button>
         )}

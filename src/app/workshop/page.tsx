@@ -10,12 +10,14 @@ import Footer from '@/components/workshop/Footer';
 import StickyMobileCTA from '@/components/workshop/StickyMobileCTA';
 import WorkshopProvider from '@/components/workshop/WorkshopProvider';
 import { getWorkshopConfig } from '@/lib/workshop/getConfig';
+import { getVslPoster } from '@/lib/workshop/poster';
 
 // Renderiza en cada request para reflejar de inmediato los cambios del panel admin.
 export const dynamic = 'force-dynamic';
 
 export default async function WorkshopPage() {
   const cfg = await getWorkshopConfig();
+  const vslPoster = await getVslPoster(cfg.vslUrl);
 
   return (
     <WorkshopProvider
@@ -24,6 +26,7 @@ export default async function WorkshopPage() {
         eventMs: cfg.eventMs,
         checkoutUrl: cfg.checkoutUrl,
         vslUrl: cfg.vslUrl,
+        vslPoster,
       }}
     >
       <Header />

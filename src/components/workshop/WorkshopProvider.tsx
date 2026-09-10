@@ -9,6 +9,7 @@ export interface WorkshopClientConfig {
   eventMs: number;
   checkoutUrl: string;
   vslUrl: string;
+  vslPoster: string | null;
 }
 
 const Ctx = createContext<WorkshopClientConfig | null>(null);
