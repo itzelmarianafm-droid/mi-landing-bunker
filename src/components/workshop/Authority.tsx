@@ -23,7 +23,7 @@ const COACHES = [
     name: 'Mariana Franco',
     role: 'Entrenadora · Ventas',
     photo: '/workshop/mariana.jpg',
-    bio: 'Más de 10 años en marketing, ventas y desarrollo comercial, con formación en corporativos como Nissan, Mercedes-Benz, IBM y Microsoft. Reconocida en el "40 en 7" de Jeff Walker (Product Launch Formula). Sus estrategias y lanzamientos han generado más de 8 millones de dólares para sus clientes.',
+    bio: 'Estratega de marketing, ventas y desarrollo comercial con más de 10 años de experiencia y trayectoria en corporativos como Nissan, Mercedes-Benz, IBM y Microsoft, donde llegó a ser gerente a los 24 años. Sus estrategias y lanzamientos han generado más de 8 millones de dólares para sus clientes, incluyendo una campaña de 1.3 millones en 7 días —reconocida con el "40 en 7" de Jeff Walker (Product Launch Formula)—. Su método CORE™ convierte el conocimiento y el talento en ofertas que sí venden.',
   },
   {
     name: 'Paco Anguiano',
