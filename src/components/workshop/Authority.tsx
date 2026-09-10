@@ -18,36 +18,52 @@ const TESTIMONIALS = [
   },
 ];
 
+const COACHES = [
+  {
+    name: 'Mariana Franco',
+    role: 'Entrenadora · Ventas',
+    photo: '/workshop/mariana.jpg',
+    bio: 'Más de 10 años en marketing, ventas y desarrollo comercial, con formación en corporativos como Nissan, Mercedes-Benz, IBM y Microsoft. Reconocida en el "40 en 7" de Jeff Walker (Product Launch Formula). Sus estrategias y lanzamientos han generado más de 8 millones de dólares para sus clientes.',
+  },
+  {
+    name: 'Paco Anguiano',
+    role: 'Entrenador · Ventas · Imparte este workshop',
+    photo: '/reto/paco.png',
+    bio: '19 años formando equipos comerciales y líderes en México, Estados Unidos, Centroamérica y España. Autor del libro "Por supuesto que puedes vender". Especialista en comportamiento humano, comunicación persuasiva e IA aplicada a los procesos comerciales.',
+  },
+];
+
 export default function Authority() {
   return (
     <section className="ws-light border-b border-black/10">
       <div className="mx-auto max-w-4xl px-4 py-16 sm:px-6 md:py-20">
         <Reveal>
-          <p className="ws-eyebrow mb-3">Quién te entrena</p>
+          <p className="ws-eyebrow mb-3">Quiénes te entrenan</p>
+          <h2 className="mb-8 text-2xl font-extrabold uppercase leading-tight tracking-tight text-[#141414] sm:text-3xl">
+            Dos trayectorias, una premisa: vender no se improvisa, se entrena.
+          </h2>
         </Reveal>
 
-        {/* Paco */}
-        <Reveal>
-          <div className="grid gap-6 overflow-hidden rounded-xl border border-black/10 bg-white sm:grid-cols-[220px_1fr]">
-            <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#e6e2da] sm:aspect-auto">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/reto/paco.png" alt="Paco Anguiano" className="ws-coach-photo h-full w-full" />
-            </div>
-            <div className="p-5 sm:py-7 sm:pr-7">
-              <div className="mb-1 h-0.5 w-8 bg-[var(--combat)]" />
-              <p className="font-extrabold uppercase tracking-wide text-[#141414]">Paco Anguiano</p>
-              <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--combat)]">
-                Entrenador · Ventas
-              </p>
-              <p className="mt-3 text-sm leading-relaxed text-[#56514A]">
-                19 años formando equipos comerciales y líderes en México, Estados Unidos,
-                Centroamérica y España. Autor del libro "Por supuesto que puedes vender". Especialista
-                en comportamiento humano, comunicación persuasiva e IA aplicada a los procesos
-                comerciales.
-              </p>
-            </div>
-          </div>
-        </Reveal>
+        <div className="grid gap-6 sm:grid-cols-2">
+          {COACHES.map((c) => (
+            <Reveal key={c.name}>
+              <div className="h-full overflow-hidden rounded-xl border border-black/10 bg-white">
+                <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#e6e2da]">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={c.photo} alt={c.name} className="ws-coach-photo h-full w-full" />
+                </div>
+                <div className="p-5">
+                  <div className="mb-1 h-0.5 w-8 bg-[var(--combat)]" />
+                  <p className="font-extrabold uppercase tracking-wide text-[#141414]">{c.name}</p>
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-[var(--combat)]">
+                    {c.role}
+                  </p>
+                  <p className="mt-3 text-sm leading-relaxed text-[#56514A]">{c.bio}</p>
+                </div>
+              </div>
+            </Reveal>
+          ))}
+        </div>
 
         {/* Testimonios */}
         <div className="mt-8 grid gap-4 md:grid-cols-3">
