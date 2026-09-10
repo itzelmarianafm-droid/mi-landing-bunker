@@ -39,7 +39,7 @@ export const DEFAULT_CONFIG: WorkshopConfig = {
   duration: '5 horas',
   live: 'En vivo',
   recording: 'Grabación disponible 15 días',
-  host: 'Paco Anguiano',
+  host: 'Paco Anguiano y Mariana Franco',
   tiers: [
     makeTier('preventa', 'Preventa · hasta el 20 de septiembre', 9, '2026-09-21T00:00:00-06:00'),
     makeTier('lote2', '20 al 30 de septiembre', 19, '2026-10-01T00:00:00-06:00'),

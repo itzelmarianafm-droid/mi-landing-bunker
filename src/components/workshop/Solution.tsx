@@ -35,8 +35,8 @@ export default function Solution() {
           </h2>
           <p className="mt-5 max-w-2xl text-[15px] leading-relaxed ws-muted">
             "Prospecta sin Rogar" no es una charla motivacional. Es un workshop de trabajo: durante 5
-            horas construyes, en vivo y con Paco corrigiéndote, tu forma de abrir conversaciones que
-            la gente sí responde. Sales con algo en la mano, no con apuntes.
+            horas construyes, en vivo y con Paco Anguiano y Mariana Franco corrigiéndote, tu forma de
+            abrir conversaciones que la gente sí responde. Sales con algo en la mano, no con apuntes.
           </p>
         </Reveal>
 

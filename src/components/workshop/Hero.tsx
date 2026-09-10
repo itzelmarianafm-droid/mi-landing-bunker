@@ -58,8 +58,7 @@ export default function Hero({ cfg }: { cfg: WorkshopConfig }) {
 
         {/* Trust bar */}
         <p className="mx-auto mt-8 max-w-xl border-t border-[var(--line)] pt-5 text-[11px] font-semibold uppercase tracking-[0.14em] text-[var(--dim)]">
-          Imparte {cfg.host} · 19 años formando vendedores · Autor de "Por supuesto que puedes
-          vender".
+          Con {cfg.host} · Entrenadores de ventas de El Búnker del Vendedor.
         </p>
       </div>
     </section>

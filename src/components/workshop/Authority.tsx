@@ -27,7 +27,7 @@ const COACHES = [
   },
   {
     name: 'Paco Anguiano',
-    role: 'Entrenador · Ventas · Imparte este workshop',
+    role: 'Entrenador · Ventas',
     photo: '/reto/paco.png',
     bio: '19 años formando equipos comerciales y líderes en México, Estados Unidos, Centroamérica y España. Autor del libro "Por supuesto que puedes vender". Especialista en comportamiento humano, comunicación persuasiva e IA aplicada a los procesos comerciales.',
   },

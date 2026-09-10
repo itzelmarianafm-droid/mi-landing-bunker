@@ -12,7 +12,7 @@ export default function FAQ({ cfg }: { cfg: WorkshopConfig }) {
     },
     {
       q: '¿Es en vivo o grabado?',
-      a: `100% en vivo el ${fecha} para que ejecutes en tiempo real y Paco te corrija. Y si no puedes conectarte o quieres repasarlo, tienes acceso a la grabación durante 15 días. Lo ideal es hacerlo en vivo: ahí recibes la retroalimentación.`,
+      a: `100% en vivo el ${fecha} para que ejecutes en tiempo real y Paco y Mariana te corrijan. Y si no puedes conectarte o quieres repasarlo, tienes acceso a la grabación durante 15 días. Lo ideal es hacerlo en vivo: ahí recibes la retroalimentación.`,
     },
     {
       q: '¿Y si entro y no me sirve?',
