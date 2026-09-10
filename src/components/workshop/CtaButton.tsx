@@ -1,8 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CHECKOUT_URL, EVENT_TARGET_MS } from '@/lib/workshop/config';
-import { getActiveTier } from '@/lib/workshop/pricing';
+import { getActiveTier } from '@/lib/workshop/config';
+import { useWorkshopConfig } from './WorkshopProvider';
 
 interface Props {
   children: React.ReactNode;
@@ -19,18 +19,18 @@ function track(event: string) {
 }
 
 export default function CtaButton({ children, className = '', withPrice = false }: Props) {
+  const { tiers, eventMs, checkoutUrl } = useWorkshopConfig();
   const [closed, setClosed] = useState(false);
   const [price, setPrice] = useState<number | null>(null);
 
   useEffect(() => {
-    const tier = getActiveTier(Date.now());
-    // Registro cerrado si ya pasó el evento o ya no hay lote activo.
-    if (!tier || EVENT_TARGET_MS - Date.now() <= 0) {
+    const tier = getActiveTier(tiers, Date.now());
+    if (!tier || eventMs - Date.now() <= 0) {
       setClosed(true);
     } else {
       setPrice(tier.price);
     }
-  }, []);
+  }, [tiers, eventMs]);
 
   if (closed) {
     return (
@@ -40,8 +40,7 @@ export default function CtaButton({ children, className = '', withPrice = false 
     );
   }
 
-  // Sin checkout aún → lleva a la sección de registro.
-  const href = CHECKOUT_URL || '#registro';
+  const href = checkoutUrl || '#registro';
   const external = href.startsWith('http');
 
   return (

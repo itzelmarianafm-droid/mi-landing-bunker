@@ -1,15 +1,17 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { TIERS, getActiveTier } from '@/lib/workshop/pricing';
+import { getActiveTier } from '@/lib/workshop/config';
+import { useWorkshopConfig } from './WorkshopProvider';
 
 export default function PriceTiers({ compact = false }: { compact?: boolean }) {
+  const { tiers } = useWorkshopConfig();
   const [activeId, setActiveId] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
-    const t = getActiveTier(Date.now());
+    const t = getActiveTier(tiers, Date.now());
     setActiveId(t ? t.id : null);
-  }, []);
+  }, [tiers]);
 
   return (
     <div className={compact ? 'w-full' : 'mx-auto w-full max-w-xl'}>
@@ -17,12 +19,12 @@ export default function PriceTiers({ compact = false }: { compact?: boolean }) {
         El precio sube por lotes
       </p>
       <div className="grid gap-2 sm:grid-cols-3">
-        {TIERS.map((t) => {
+        {tiers.map((t) => {
           const isActive = activeId === t.id;
           const isPast =
             activeId !== undefined &&
             activeId !== null &&
-            TIERS.findIndex((x) => x.id === activeId) > TIERS.findIndex((x) => x.id === t.id);
+            tiers.findIndex((x) => x.id === activeId) > tiers.findIndex((x) => x.id === t.id);
           const closed = activeId === null;
 
           return (
@@ -32,7 +34,7 @@ export default function PriceTiers({ compact = false }: { compact?: boolean }) {
               style={{
                 borderColor: isActive ? 'var(--combat)' : 'var(--line)',
                 background: isActive ? 'rgba(242,92,31,0.10)' : 'var(--panel-2)',
-                opacity: isPast || (closed && true) ? 0.45 : 1,
+                opacity: isPast || closed ? 0.45 : 1,
               }}
             >
               <div className="flex items-baseline justify-center gap-1">
@@ -61,7 +63,7 @@ export default function PriceTiers({ compact = false }: { compact?: boolean }) {
       </div>
       {activeId === null && (
         <p className="mt-2 text-center text-xs font-bold text-[var(--combat)]">
-          Registro cerrado — el workshop es el 3 de octubre.
+          Registro cerrado.
         </p>
       )}
     </div>

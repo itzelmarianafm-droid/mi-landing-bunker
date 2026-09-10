@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { EVENT_TARGET_MS } from '@/lib/workshop/config';
+import { useWorkshopConfig } from './WorkshopProvider';
 
 function parts(ms: number) {
   const total = Math.max(0, Math.floor(ms / 1000));
@@ -16,15 +16,16 @@ function parts(ms: number) {
 const pad = (n: number) => String(n).padStart(2, '0');
 
 export default function Countdown({ variant = 'full' }: { variant?: 'full' | 'mini' }) {
+  const { eventMs } = useWorkshopConfig();
   // Empieza en null para evitar mismatch de hidratación (server vs cliente).
   const [remaining, setRemaining] = useState<number | null>(null);
 
   useEffect(() => {
-    const tick = () => setRemaining(EVENT_TARGET_MS - Date.now());
+    const tick = () => setRemaining(eventMs - Date.now());
     tick();
     const id = setInterval(tick, 1000);
     return () => clearInterval(id);
-  }, []);
+  }, [eventMs]);
 
   if (remaining === null) {
     // Placeholder mientras monta (mismo tamaño para no saltar el layout).

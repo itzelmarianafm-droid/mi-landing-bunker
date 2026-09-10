@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { VSL_EMBED_URL } from '@/lib/workshop/config';
+import { useWorkshopConfig } from './WorkshopProvider';
 
 function track(event: string) {
   const w = window as unknown as { dataLayer?: unknown[] };
@@ -17,15 +17,15 @@ const PlayIcon = () => (
 );
 
 export default function Vsl() {
+  const { vslUrl } = useWorkshopConfig();
   const [playing, setPlaying] = useState(false);
 
-  // VSL real disponible
-  if (VSL_EMBED_URL) {
+  if (vslUrl) {
     return (
       <div className="ws-vsl ws-brackets">
         {playing ? (
           <iframe
-            src={`${VSL_EMBED_URL}${VSL_EMBED_URL.includes('?') ? '&' : '?'}autoplay=1`}
+            src={`${vslUrl}${vslUrl.includes('?') ? '&' : '?'}autoplay=1`}
             title="Workshop Prospecta sin Rogar — VSL"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
             allowFullScreen
@@ -49,7 +49,6 @@ export default function Vsl() {
     );
   }
 
-  // Placeholder mientras no hay VSL
   return (
     <div className="ws-vsl ws-brackets ws-grid flex flex-col items-center justify-center gap-4">
       <span className="ws-play" aria-hidden>

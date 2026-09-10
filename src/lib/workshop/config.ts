@@ -1,32 +1,58 @@
 // =====================================================================
-// Configuración del Workshop "Prospecta sin Rogar" ($9)
+// Configuración del Workshop "Prospecta sin Rogar"
+// DEFAULT_CONFIG = valores por defecto (fallback si no hay Supabase).
+// El panel de admin guarda cambios en Supabase; getConfig() los lee.
 // =====================================================================
 
-// Fecha/hora del evento: 3 oct 2026, 9:00 AM hora Ciudad de México.
-// México ya no usa horario de verano → CDMX es UTC-6 todo el año.
-// El offset fijo -06:00 hace que el contador sea igual para todos, sin
-// importar la zona horaria del navegador.
-export const EVENT_TARGET_ISO = '2026-10-03T09:00:00-06:00';
-export const EVENT_TARGET_MS = Date.parse(EVENT_TARGET_ISO);
+export interface Tier {
+  id: string;
+  label: string; // rango de fechas legible
+  price: number; // USD
+  endIso: string; // instante en que deja de estar activo (CDMX, offset -06:00)
+  endMs: number; // derivado de endIso
+}
 
-export const EVENT = {
+export interface WorkshopConfig {
+  eventIso: string; // fecha/hora del evento (CDMX)
+  eventMs: number; // derivado
+  dateLabel: string;
+  timeLabel: string;
+  duration: string;
+  live: string;
+  recording: string;
+  host: string;
+  tiers: Tier[];
+  checkoutUrl: string;
+  vslUrl: string;
+}
+
+export function makeTier(id: string, label: string, price: number, endIso: string): Tier {
+  return { id, label, price, endIso, endMs: Date.parse(endIso) };
+}
+
+// México no usa horario de verano → CDMX es UTC-6 todo el año (offset -06:00).
+export const DEFAULT_CONFIG: WorkshopConfig = {
+  eventIso: '2026-10-03T09:00:00-06:00',
+  eventMs: Date.parse('2026-10-03T09:00:00-06:00'),
   dateLabel: 'Sábado 3 de octubre',
   timeLabel: '9:00 AM hora CDMX',
   duration: '5 horas',
   live: 'En vivo',
   recording: 'Grabación disponible 15 días',
   host: 'Paco Anguiano',
+  tiers: [
+    makeTier('preventa', 'Preventa · hasta el 20 de septiembre', 9, '2026-09-21T00:00:00-06:00'),
+    makeTier('lote2', '20 al 30 de septiembre', 19, '2026-10-01T00:00:00-06:00'),
+    makeTier('lote3', '1 y 2 de octubre', 29, '2026-10-03T00:00:00-06:00'),
+  ],
+  checkoutUrl: 'https://pay.hotmart.com/A107551806Y?off=epkjgtlu',
+  vslUrl: 'https://player.vimeo.com/video/1225523227',
 };
 
-// Nota: la escasez ahora se comunica con venta por lotes de precio
-// (ver src/lib/workshop/pricing.ts), no con contador de cupo.
-
-// Checkout del workshop. Se usa solo si es una URL http(s) válida; si no,
-// los botones llevan a la sección de registro (#registro) sin romperse.
-const RAW_CHECKOUT = (process.env.NEXT_PUBLIC_WORKSHOP_CHECKOUT_URL || '').trim();
-export const CHECKOUT_URL = /^https?:\/\//.test(RAW_CHECKOUT) ? RAW_CHECKOUT : '';
-
-// VSL: embed de Vimeo (formato player). Se puede sobrescribir con
-// NEXT_PUBLIC_WORKSHOP_VSL_URL. Si se deja vacío, muestra placeholder.
-const VSL_DEFAULT = 'https://player.vimeo.com/video/1225523227';
-export const VSL_EMBED_URL = (process.env.NEXT_PUBLIC_WORKSHOP_VSL_URL || VSL_DEFAULT).trim();
+/** Devuelve el lote activo según el momento dado, o null si el registro cerró. */
+export function getActiveTier(tiers: Tier[], now: number): Tier | null {
+  for (const t of tiers) {
+    if (now < t.endMs) return t;
+  }
+  return null;
+}

@@ -2,8 +2,9 @@ import Reveal from './Reveal';
 import CtaButton from './CtaButton';
 import Countdown from './Countdown';
 import PriceTiers from './PriceTiers';
+import type { WorkshopConfig } from '@/lib/workshop/config';
 
-export default function FinalCTA() {
+export default function FinalCTA({ cfg }: { cfg: WorkshopConfig }) {
   return (
     <section id="registro" className="border-t-2 border-[var(--combat)] bg-[var(--panel)] scroll-mt-20">
       <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6 md:py-20">
@@ -13,8 +14,8 @@ export default function FinalCTA() {
             Un solo día. Un solo mensaje. El que cambia cómo prospectas.
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed ws-muted">
-            El workshop es en vivo el sábado 3 de octubre y no se repite. El precio sube por lotes: entre
-            antes y paga menos.
+            El workshop es en vivo el {cfg.dateLabel.toLowerCase()} y no se repite. El precio sube por
+            lotes: entre antes y paga menos.
           </p>
 
           <div className="mt-7 flex justify-center">
@@ -26,9 +27,9 @@ export default function FinalCTA() {
           </div>
 
           <p className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed ws-muted">
-            Te llevas 5 horas en vivo, tu mensaje de apertura listo, una rutina para prospectar todos
-            los días y acceso a la grabación por 15 días. Y vas con garantía: si no sales con algo de
-            valor, te devolvemos tu dinero.{' '}
+            Te llevas {cfg.duration} en vivo, tu mensaje de apertura listo, una rutina para prospectar
+            todos los días y acceso a la grabación por 15 días. Y vas con garantía: si no sales con
+            algo de valor, te devolvemos tu dinero.{' '}
             <strong className="font-bold text-[var(--text)]">
               El único riesgo real es seguir otra semana viendo el cursor parpadear.
             </strong>
@@ -49,8 +50,7 @@ export default function FinalCTA() {
             Reservar mi lugar
           </CtaButton>
           <p className="mt-3 text-xs ws-muted">
-            Acceso inmediato por correo · Grabación disponible 15 días · Sábado 3 de octubre, 9:00 AM
-            (CDMX).
+            Acceso inmediato por correo · Grabación disponible 15 días · {cfg.dateLabel}, {cfg.timeLabel}.
           </p>
           <p className="mt-2 text-[11px] text-[var(--dim)]">
             Cuando el reloj llegue a cero se cierra el registro. Antes de eso, el precio sube por lotes.
