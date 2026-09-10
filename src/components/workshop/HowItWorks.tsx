@@ -1,9 +1,9 @@
 import Reveal from './Reveal';
 
 const STEPS = [
-  ['Reserva tu lugar por $9 USD', 'y recibe el acceso en tu correo.'],
+  ['Reserva tu lugar (desde $9 USD en preventa)', 'y recibe el acceso en tu correo.'],
   [
-    'Conéctate en vivo el sábado 9 de agosto, 9:00 AM (CDMX).',
+    'Conéctate en vivo el sábado 3 de octubre, 9:00 AM (CDMX).',
     'Ten tu WhatsApp o lista de contactos a la mano: vas a trabajar.',
   ],
   ['Sales con tu mensaje listo y tu rutina diaria.', 'Empiezas a prospectar ese mismo día.'],

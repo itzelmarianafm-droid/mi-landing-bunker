@@ -2,16 +2,16 @@ import Reveal from './Reveal';
 
 const FAQS = [
   {
-    q: '¿$9 por 4 horas en vivo? ¿Dónde está el truco?',
-    a: 'No hay truco. Es un workshop de entrada: preferimos que nos conozcas trabajando. Sales con tu mensaje y tu rutina; lo que hagas con eso, depende de ti.',
+    q: '¿Tan accesible por 5 horas en vivo? ¿Dónde está el truco?',
+    a: 'No hay truco. Es un workshop de entrada: preferimos que nos conozcas trabajando. El precio sube por lotes (preventa $9, luego $19 y $29), así que entre antes, mejor. Sales con tu mensaje y tu rutina; lo que hagas con eso, depende de ti.',
   },
   {
     q: '¿Es en vivo o grabado?',
-    a: '100% en vivo el sábado 9 de agosto a las 9:00 AM (hora CDMX) para que ejecutes en tiempo real y Paco te corrija. Y si no puedes conectarte o quieres repasarlo, tienes acceso a la grabación durante 15 días. Lo ideal es hacerlo en vivo: ahí recibes la retroalimentación.',
+    a: '100% en vivo el sábado 3 de octubre a las 9:00 AM (hora CDMX) para que ejecutes en tiempo real y Paco te corrija. Y si no puedes conectarte o quieres repasarlo, tienes acceso a la grabación durante 15 días. Lo ideal es hacerlo en vivo: ahí recibes la retroalimentación.',
   },
   {
     q: '¿Y si entro y no me sirve?',
-    a: 'Vas cubierto. Si haces el workshop y no sales con algo de valor —tu mensaje de apertura, tu rutina y claridad para prospectar— te devolvemos tus $9. Sin vueltas.',
+    a: 'Vas cubierto. Si haces el workshop y no sales con algo de valor —tu mensaje de apertura, tu rutina y claridad para prospectar— te devolvemos tu dinero. Sin vueltas.',
   },
   {
     q: '¿Sirve para mi industria?',
@@ -27,7 +27,7 @@ const FAQS = [
   },
   {
     q: '¿Cuánto dura y qué necesito?',
-    a: '4 horas. Solo tu teléfono con WhatsApp o tu lista de contactos, y disposición para trabajar en vivo.',
+    a: '5 horas. Solo tu teléfono con WhatsApp o tu lista de contactos, y disposición para trabajar en vivo.',
   },
 ];
 

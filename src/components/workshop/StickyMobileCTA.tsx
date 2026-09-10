@@ -9,7 +9,7 @@ export default function StickyMobileCTA() {
           <span className="text-[10px] uppercase tracking-wider text-[var(--dim)]">Cierra en</span>
           <Countdown variant="mini" />
         </div>
-        <CtaButton className="flex-1 px-4 py-3 text-sm">Reservar — $9</CtaButton>
+        <CtaButton withPrice className="flex-1 px-4 py-3 text-sm">Reservar</CtaButton>
       </div>
     </div>
   );

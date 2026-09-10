@@ -1,11 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { CHECKOUT_URL, EVENT_TARGET_MS, SEATS_REMAINING } from '@/lib/workshop/config';
+import { CHECKOUT_URL, EVENT_TARGET_MS } from '@/lib/workshop/config';
+import { getActiveTier } from '@/lib/workshop/pricing';
 
 interface Props {
   children: React.ReactNode;
   className?: string;
+  /** Si es true, agrega el precio del lote actual al final (ej. "— $9 USD"). */
+  withPrice?: boolean;
 }
 
 function track(event: string) {
@@ -15,21 +18,24 @@ function track(event: string) {
   else console.log('[workshop]', payload);
 }
 
-export default function CtaButton({ children, className = '' }: Props) {
-  const [closedReason, setClosedReason] = useState<null | 'time' | 'full'>(null);
+export default function CtaButton({ children, className = '', withPrice = false }: Props) {
+  const [closed, setClosed] = useState(false);
+  const [price, setPrice] = useState<number | null>(null);
 
   useEffect(() => {
-    if (SEATS_REMAINING !== null && SEATS_REMAINING <= 0) {
-      setClosedReason('full');
-    } else if (EVENT_TARGET_MS - Date.now() <= 0) {
-      setClosedReason('time');
+    const tier = getActiveTier(Date.now());
+    // Registro cerrado si ya pasó el evento o ya no hay lote activo.
+    if (!tier || EVENT_TARGET_MS - Date.now() <= 0) {
+      setClosed(true);
+    } else {
+      setPrice(tier.price);
     }
   }, []);
 
-  if (closedReason) {
+  if (closed) {
     return (
       <span className={`ws-cta ${className}`} aria-disabled="true">
-        {closedReason === 'full' ? 'Registro lleno' : 'Registro cerrado'}
+        Registro cerrado
       </span>
     );
   }
@@ -46,6 +52,7 @@ export default function CtaButton({ children, className = '' }: Props) {
       {...(external ? { target: '_self', rel: 'noopener' } : {})}
     >
       {children}
+      {withPrice && price !== null ? ` — $${price} USD` : ''}
     </a>
   );
 }

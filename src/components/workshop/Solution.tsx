@@ -31,10 +31,10 @@ export default function Solution() {
         <Reveal>
           <p className="ws-eyebrow mb-3">El workshop</p>
           <h2 className="text-2xl font-extrabold uppercase leading-tight tracking-tight sm:text-3xl">
-            4 horas en vivo para salir con tu mensaje listo y una rutina que llena tu agenda.
+            5 horas en vivo para salir con tu mensaje listo y una rutina que llena tu agenda.
           </h2>
           <p className="mt-5 max-w-2xl text-[15px] leading-relaxed ws-muted">
-            "Prospecta sin Rogar" no es una charla motivacional. Es un workshop de trabajo: durante 4
+            "Prospecta sin Rogar" no es una charla motivacional. Es un workshop de trabajo: durante 5
             horas construyes, en vivo y con Paco corrigiéndote, tu forma de abrir conversaciones que
             la gente sí responde. Sales con algo en la mano, no con apuntes.
           </p>
@@ -59,7 +59,7 @@ export default function Solution() {
         </div>
 
         <div className="mt-10 text-center">
-          <CtaButton className="px-8 py-4 text-base">Quiero mi lugar — $9 USD</CtaButton>
+          <CtaButton withPrice className="px-8 py-4 text-base">Quiero mi lugar</CtaButton>
         </div>
       </div>
     </section>

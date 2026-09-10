@@ -13,8 +13,8 @@ export default function Header() {
           priority
           className="h-7 w-auto sm:h-8"
         />
-        <CtaButton className="px-4 py-2.5 text-xs sm:px-6 sm:text-sm">
-          Reservar mi lugar · $9
+        <CtaButton withPrice className="px-4 py-2.5 text-xs sm:px-6 sm:text-sm">
+          Reservar mi lugar
         </CtaButton>
       </div>
     </header>

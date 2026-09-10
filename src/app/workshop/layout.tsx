@@ -12,19 +12,19 @@ const montserrat = Montserrat({
 export const metadata: Metadata = {
   title: 'Prospecta sin Rogar — Workshop en vivo | El Búnker del Vendedor',
   description:
-    'Sábado 9 de agosto, 9 AM CDMX. 4 horas en vivo con Paco Anguiano. Abre conversaciones de venta sin rogar y genera 5 a 10 prospectos al día. $9 USD.',
+    'Sábado 3 de octubre, 9 AM CDMX. 5 horas en vivo con Paco Anguiano. Abre conversaciones de venta sin rogar y genera 5 a 10 prospectos al día. Desde $9 USD en preventa.',
   alternates: { canonical: '/workshop' },
   openGraph: {
     title: 'Prospecta sin Rogar — Workshop en vivo | El Búnker del Vendedor',
     description:
-      'Sábado 9 de agosto, 9 AM CDMX. 4 horas en vivo con Paco Anguiano. Genera 5 a 10 prospectos al día. $9 USD.',
+      'Sábado 3 de octubre, 9 AM CDMX. 5 horas en vivo con Paco Anguiano. Genera 5 a 10 prospectos al día. Desde $9 USD en preventa.',
     url: '/workshop',
     type: 'website',
   },
   twitter: {
     card: 'summary_large_image',
     title: 'Prospecta sin Rogar — Workshop en vivo',
-    description: 'Sábado 9 de agosto, 9 AM CDMX. 4 horas con Paco Anguiano. $9 USD.',
+    description: 'Sábado 3 de octubre, 9 AM CDMX. 5 horas con Paco Anguiano. Desde $9 USD.',
   },
 };
 
