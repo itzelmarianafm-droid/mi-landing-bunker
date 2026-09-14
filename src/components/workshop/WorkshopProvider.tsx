@@ -10,6 +10,8 @@ export interface WorkshopClientConfig {
   checkoutUrl: string;
   vslUrl: string;
   vslPoster: string | null;
+  currency: string;
+  tzLabel: string;
 }
 
 const Ctx = createContext<WorkshopClientConfig | null>(null);

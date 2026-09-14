@@ -2,7 +2,7 @@ import Reveal from './Reveal';
 import type { WorkshopConfig } from '@/lib/workshop/config';
 
 export default function FAQ({ cfg }: { cfg: WorkshopConfig }) {
-  const prices = cfg.tiers.map((t) => `$${t.price}`).join(', ');
+  const prices = `${cfg.tiers.map((t) => `$${t.price}`).join(', ')} ${cfg.currency}`;
   const fecha = `${cfg.dateLabel.toLowerCase()} a las ${cfg.timeLabel}`;
 
   const faqs = [

@@ -13,7 +13,7 @@ export interface Tier {
 }
 
 export interface WorkshopConfig {
-  eventIso: string; // fecha/hora del evento (CDMX)
+  eventIso: string; // fecha/hora del evento (con offset de zona horaria)
   eventMs: number; // derivado
   dateLabel: string;
   timeLabel: string;
@@ -24,6 +24,9 @@ export interface WorkshopConfig {
   tiers: Tier[];
   checkoutUrl: string;
   vslUrl: string;
+  currency: string; // "USD", "MXN", etc.
+  tzOffset: string; // offset ISO, ej. "-06:00" (CDMX), "-05:00" (Colombia)
+  tzLabel: string; // etiqueta bajo el contador, ej. "Hora de la Ciudad de México"
 }
 
 export function makeTier(id: string, label: string, price: number, endIso: string): Tier {
@@ -47,6 +50,9 @@ export const DEFAULT_CONFIG: WorkshopConfig = {
   ],
   checkoutUrl: 'https://pay.hotmart.com/A107551806Y?checkoutMode=10',
   vslUrl: 'https://player.vimeo.com/video/1225523227',
+  currency: 'USD',
+  tzOffset: '-06:00',
+  tzLabel: 'Hora de la Ciudad de México',
 };
 
 /** Devuelve el lote activo según el momento dado, o null si el registro cerró. */

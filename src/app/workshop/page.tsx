@@ -27,6 +27,8 @@ export default async function WorkshopPage() {
         checkoutUrl: cfg.checkoutUrl,
         vslUrl: cfg.vslUrl,
         vslPoster,
+        currency: cfg.currency,
+        tzLabel: cfg.tzLabel,
       }}
     >
       <Header />

@@ -16,7 +16,7 @@ function parts(ms: number) {
 const pad = (n: number) => String(n).padStart(2, '0');
 
 export default function Countdown({ variant = 'full' }: { variant?: 'full' | 'mini' }) {
-  const { eventMs } = useWorkshopConfig();
+  const { eventMs, tzLabel } = useWorkshopConfig();
   // Empieza en null para evitar mismatch de hidratación (server vs cliente).
   const [remaining, setRemaining] = useState<number | null>(null);
 
@@ -73,7 +73,7 @@ export default function Countdown({ variant = 'full' }: { variant?: 'full' | 'mi
         ))}
       </div>
       <p className="mt-2 text-[11px] text-[var(--dim)]">
-        Hora de la Ciudad de México · convierte a tu zona horaria.
+        {tzLabel} · convierte a tu zona horaria.
       </p>
     </div>
   );

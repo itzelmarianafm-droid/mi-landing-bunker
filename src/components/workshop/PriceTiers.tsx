@@ -5,7 +5,7 @@ import { getActiveTier } from '@/lib/workshop/config';
 import { useWorkshopConfig } from './WorkshopProvider';
 
 export default function PriceTiers({ compact = false }: { compact?: boolean }) {
-  const { tiers } = useWorkshopConfig();
+  const { tiers, currency } = useWorkshopConfig();
   const [activeId, setActiveId] = useState<string | null | undefined>(undefined);
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function PriceTiers({ compact = false }: { compact?: boolean }) {
                 >
                   ${t.price}
                 </span>
-                <span className="text-[11px] text-[var(--muted)]">USD</span>
+                <span className="text-[11px] text-[var(--muted)]">{currency}</span>
               </div>
               <p className="mt-1 text-[10px] leading-tight text-[var(--muted)]">{t.label}</p>
               {isActive && (

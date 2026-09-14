@@ -3,9 +3,19 @@
 import { useState } from 'react';
 import type { WorkshopConfig } from '@/lib/workshop/config';
 
-// CDMX es UTC-6 fijo. Convertimos entre ISO (con offset) y datetime-local.
+// Convertimos entre ISO (con offset de zona horaria) y datetime-local.
 const isoToLocal = (iso: string) => (iso ? iso.slice(0, 16) : ''); // 'YYYY-MM-DDTHH:MM'
-const localToIso = (local: string) => (local ? `${local}:00-06:00` : '');
+const localToIso = (local: string, offset: string) => (local ? `${local}:00${offset}` : '');
+
+// Zonas horarias frecuentes (offset ISO + etiqueta).
+const TIMEZONES = [
+  { offset: '-06:00', label: 'México / Centroamérica (CDMX, UTC-6)' },
+  { offset: '-05:00', label: 'Colombia / Perú / Ecuador (UTC-5)' },
+  { offset: '-04:00', label: 'Bolivia / Venezuela (UTC-4)' },
+  { offset: '-03:00', label: 'Argentina / Chile / Uruguay (UTC-3)' },
+  { offset: '+01:00', label: 'España, horario de invierno (UTC+1)' },
+  { offset: '+02:00', label: 'España, horario de verano (UTC+2)' },
+];
 
 interface TierState {
   id: string;
@@ -24,6 +34,9 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
   const [host, setHost] = useState(initial.host);
   const [checkoutUrl, setCheckoutUrl] = useState(initial.checkoutUrl);
   const [vslUrl, setVslUrl] = useState(initial.vslUrl);
+  const [currency, setCurrency] = useState(initial.currency);
+  const [tzOffset, setTzOffset] = useState(initial.tzOffset);
+  const [tzLabel, setTzLabel] = useState(initial.tzLabel);
   const [tiers, setTiers] = useState<TierState[]>(
     initial.tiers.map((t) => ({
       id: t.id,
@@ -47,7 +60,7 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
     setStatus('saving');
     setErrorMsg('');
     const payload = {
-      eventIso: localToIso(eventLocal),
+      eventIso: localToIso(eventLocal, tzOffset),
       dateLabel,
       timeLabel,
       duration,
@@ -56,11 +69,14 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
       host,
       checkoutUrl,
       vslUrl,
+      currency,
+      tzOffset,
+      tzLabel,
       tiers: tiers.map((t) => ({
         id: t.id,
         label: t.label,
         price: Number(t.price) || 0,
-        endIso: localToIso(t.endLocal),
+        endIso: localToIso(t.endLocal, tzOffset),
       })),
     };
     try {
@@ -114,7 +130,7 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
           <div className="sm:col-span-2">
             <label className={label}>Fecha y hora del evento (CDMX)</label>
             <input type="datetime-local" className={input} value={eventLocal} onChange={(e) => setEventLocal(e.target.value)} />
-            <p className="mt-1 text-[11px] text-[var(--dim)]">Controla el contador regresivo. Se interpreta en hora de la Ciudad de México.</p>
+            <p className="mt-1 text-[11px] text-[var(--dim)]">Controla el contador regresivo. Se interpreta en la zona horaria que elijas abajo.</p>
           </div>
           <div>
             <label className={label}>Fecha (texto visible)</label>
@@ -139,6 +155,25 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
           <div>
             <label className={label}>Etiqueta grabación</label>
             <input className={input} value={recording} onChange={(e) => setRecording(e.target.value)} placeholder="Grabación disponible 15 días" />
+          </div>
+          <div>
+            <label className={label}>Moneda</label>
+            <input className={input} value={currency} onChange={(e) => setCurrency(e.target.value)} placeholder="USD" />
+            <p className="mt-1 text-[11px] text-[var(--dim)]">Se muestra junto al precio, ej. "$9 USD" o "$199 MXN".</p>
+          </div>
+          <div>
+            <label className={label}>Zona horaria del evento</label>
+            <select className={input} value={tzOffset} onChange={(e) => setTzOffset(e.target.value)}>
+              {TIMEZONES.map((t) => (
+                <option key={t.offset} value={t.offset}>
+                  {t.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="sm:col-span-2">
+            <label className={label}>Etiqueta de zona horaria (texto bajo el contador)</label>
+            <input className={input} value={tzLabel} onChange={(e) => setTzLabel(e.target.value)} placeholder="Hora de la Ciudad de México" />
           </div>
         </div>
       </section>

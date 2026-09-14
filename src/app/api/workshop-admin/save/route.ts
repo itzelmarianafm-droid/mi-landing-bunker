@@ -47,6 +47,9 @@ export async function POST(req: Request) {
     tiers,
     checkout_url: String(body.checkoutUrl || ''),
     vsl_url: String(body.vslUrl || ''),
+    currency: String(body.currency || 'USD'),
+    tz_offset: String(body.tzOffset || '-06:00'),
+    tz_label: String(body.tzLabel || ''),
     updated_at: new Date().toISOString(),
   };
 

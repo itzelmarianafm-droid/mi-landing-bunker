@@ -19,7 +19,7 @@ function track(event: string) {
 }
 
 export default function CtaButton({ children, className = '', withPrice = false }: Props) {
-  const { tiers, eventMs, checkoutUrl } = useWorkshopConfig();
+  const { tiers, eventMs, checkoutUrl, currency } = useWorkshopConfig();
   const [closed, setClosed] = useState(false);
   const [price, setPrice] = useState<number | null>(null);
 
@@ -51,7 +51,7 @@ export default function CtaButton({ children, className = '', withPrice = false 
       {...(external ? { target: '_self', rel: 'noopener' } : {})}
     >
       {children}
-      {withPrice && price !== null ? ` — $${price} USD` : ''}
+      {withPrice && price !== null ? ` — $${price} ${currency}` : ''}
     </a>
   );
 }

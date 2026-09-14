@@ -11,6 +11,9 @@ interface Row {
   tiers?: { id: string; label: string; price: number; endIso: string }[];
   checkout_url?: string;
   vsl_url?: string;
+  currency?: string;
+  tz_offset?: string;
+  tz_label?: string;
 }
 
 const isUrl = (v?: string) => !!v && /^https?:\/\//.test(v);
@@ -34,6 +37,9 @@ function mergeRow(row: Row): WorkshopConfig {
     tiers,
     checkoutUrl: isUrl(row.checkout_url) ? row.checkout_url! : DEFAULT_CONFIG.checkoutUrl,
     vslUrl: isUrl(row.vsl_url) ? row.vsl_url! : DEFAULT_CONFIG.vslUrl,
+    currency: row.currency || DEFAULT_CONFIG.currency,
+    tzOffset: row.tz_offset || DEFAULT_CONFIG.tzOffset,
+    tzLabel: row.tz_label || DEFAULT_CONFIG.tzLabel,
   };
 }
 
