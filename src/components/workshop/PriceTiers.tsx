@@ -18,7 +18,7 @@ export default function PriceTiers({ compact = false }: { compact?: boolean }) {
       <p className="mb-2 text-[11px] font-bold uppercase tracking-[0.16em] text-[var(--dim)]">
         El precio sube por lotes
       </p>
-      <div className="grid gap-2 sm:grid-cols-3">
+      <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:justify-center">
         {tiers.map((t) => {
           const isActive = activeId === t.id;
           const isPast =
@@ -30,7 +30,7 @@ export default function PriceTiers({ compact = false }: { compact?: boolean }) {
           return (
             <div
               key={t.id}
-              className="rounded-lg border p-3 text-center transition-colors"
+              className="w-full rounded-lg border p-3 text-center transition-colors sm:w-40"
               style={{
                 borderColor: isActive ? 'var(--combat)' : 'var(--line)',
                 background: isActive ? 'rgba(242,92,31,0.10)' : 'var(--panel-2)',
