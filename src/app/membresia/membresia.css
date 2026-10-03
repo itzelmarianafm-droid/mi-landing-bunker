@@ -350,6 +350,12 @@
   visibility: visible;
   transform: none;
 }
+/* Cuando está abierto por toque, el popover captura el toque para cerrarse
+   él mismo (y no disparar por accidente el punto que queda debajo). */
+.membresia .item.open .pop,
+.membresia .pli.open .pop {
+  pointer-events: auto;
+}
 .membresia .anchor {
   margin-top: 28px;
   text-align: center;
@@ -664,9 +670,8 @@
     grid-template-columns: 1fr;
   }
   .membresia .hero .photo {
-    order: -1;
-    max-width: 360px;
-    margin: 0 auto;
+    max-width: 320px;
+    margin: 18px auto 0;
   }
   .membresia .wafloat span {
     display: none;
