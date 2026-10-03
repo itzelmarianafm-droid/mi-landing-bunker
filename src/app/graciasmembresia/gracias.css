@@ -1,0 +1,214 @@
+/* =====================================================================
+   Página de gracias post-compra — scoped bajo .gracias.
+   Mismo sistema visual que la landing del Búnker del Vendedor.
+   ===================================================================== */
+
+.gracias {
+  --bg: #0e1216;
+  --card: #171e25;
+  --line: rgba(255, 255, 255, 0.09);
+  --accent: #ff6a1f;
+  --wa: #25d366;
+  --green: #36c275;
+  --text: #f4f6f8;
+  --muted: #95a1aa;
+  --disp: var(--font-anton), "Anton", system-ui, sans-serif;
+  --cond: var(--font-barlow-condensed), "Barlow Condensed", system-ui, sans-serif;
+  --body: var(--font-barlow), "Barlow", system-ui, -apple-system, sans-serif;
+
+  min-height: 100vh;
+  background: radial-gradient(
+      120% 70% at 50% 0%,
+      rgba(255, 106, 31, 0.16),
+      transparent 55%
+    ),
+    var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 28px 18px calc(40px + env(safe-area-inset-bottom, 0));
+}
+
+.gracias *,
+.gracias *::before,
+.gracias *::after {
+  box-sizing: border-box;
+}
+
+.gracias :focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+.gracias .gwrap {
+  width: 100%;
+  max-width: 560px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+/* Encabezado */
+.gracias .eyebrow {
+  font-family: var(--cond);
+  font-weight: 700;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--accent);
+  margin: 0;
+}
+.gracias .photo {
+  margin: 14px auto 0;
+  width: 190px;
+  max-width: 60%;
+  height: auto;
+  border-radius: 14px;
+  border: 1px solid var(--line);
+}
+.gracias .check {
+  width: 46px;
+  height: 46px;
+  margin: 18px auto 0;
+  border-radius: 50%;
+  background: rgba(54, 194, 117, 0.14);
+  border: 1px solid var(--green);
+  color: var(--green);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 700;
+}
+.gracias h1 {
+  font-family: var(--disp);
+  font-weight: 400;
+  line-height: 1.05;
+  font-size: clamp(30px, 8vw, 44px);
+  margin: 14px 0 0;
+}
+.gracias .sub {
+  color: var(--muted);
+  font-size: 16px;
+  margin: 12px auto 0;
+  max-width: 46ch;
+}
+
+/* Tarjetas de pasos */
+.gracias .card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  padding: 22px;
+  margin-top: 20px;
+  text-align: left;
+}
+.gracias .card.step1 {
+  border-color: rgba(37, 211, 102, 0.45);
+  box-shadow: 0 0 0 3px rgba(37, 211, 102, 0.12);
+}
+.gracias .steplabel {
+  font-family: var(--cond);
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  font-size: 12px;
+  margin: 0;
+}
+.gracias .step1 .steplabel {
+  color: var(--wa);
+}
+.gracias .step2 .steplabel {
+  color: var(--accent);
+}
+.gracias .card h2 {
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 22px;
+  margin: 6px 0 0;
+}
+.gracias .card p {
+  color: var(--muted);
+  font-size: 15.5px;
+  margin: 8px 0 0;
+}
+.gracias .card p b {
+  color: var(--text);
+}
+
+/* Botón de WhatsApp (acción principal) */
+.gracias .btn-wa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  margin-top: 16px;
+  background: var(--wa);
+  color: #06331c;
+  font-family: var(--cond);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  font-size: 18px;
+  text-decoration: none;
+  border-radius: 12px;
+  padding: 16px 20px;
+  transition: transform 0.12s, filter 0.15s;
+}
+.gracias .btn-wa:hover {
+  filter: brightness(1.06);
+  transform: translateY(-1px);
+}
+.gracias .btn-wa svg {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 24px;
+}
+
+/* Soporte */
+.gracias .support {
+  margin-top: 24px;
+  text-align: center;
+}
+.gracias .support .t {
+  font-family: var(--cond);
+  font-weight: 700;
+  font-size: 16px;
+  color: var(--text);
+  margin: 0 0 8px;
+}
+.gracias .support a {
+  color: var(--accent);
+  text-decoration: none;
+  font-weight: 600;
+}
+.gracias .support a:hover {
+  text-decoration: underline;
+}
+.gracias .support .row {
+  color: var(--muted);
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+/* Pie */
+.gracias .foot {
+  margin-top: 30px;
+  font-family: var(--cond);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gracias * {
+    transition-duration: 0.001ms !important;
+    animation-duration: 0.001ms !important;
+  }
+}
