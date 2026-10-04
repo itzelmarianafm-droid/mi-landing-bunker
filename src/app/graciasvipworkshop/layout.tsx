@@ -23,9 +23,9 @@ const barlow = Barlow({
   display: 'swap',
 });
 
-const TITLE = '¡Bienvenido! · El Búnker del Vendedor';
+const TITLE = 'Acceso VIP · Workshop «Prospecta sin Rogar» · El Búnker del Vendedor';
 const DESCRIPTION =
-  'Pago confirmado. Entra al grupo de WhatsApp de alumnos y revisa tu correo para empezar hoy mismo.';
+  'Pago confirmado. Entra al grupo de WhatsApp del workshop y revisa tu correo para empezar.';
 
 export const metadata: Metadata = {
   title: TITLE,
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   robots: { index: false, follow: false },
 };
 
-export default function GraciasLayout({
+export default function GraciasVipWorkshopLayout({
   children,
 }: {
   children: React.ReactNode;

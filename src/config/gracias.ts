@@ -7,10 +7,16 @@
  * agradecimiento, para que se muestre tras aprobar el pago.
  */
 
-/** Enlace de invitación al grupo de WhatsApp de alumnos (acción principal). */
+/** Grupo de WhatsApp de la Membresía (/graciasmembresia). */
 export const GRUPO_WHATSAPP = (
   process.env.NEXT_PUBLIC_GRUPO_WHATSAPP ||
   "https://chat.whatsapp.com/Hi22sbNzv6g8z1tWunUizi"
+).trim();
+
+/** Grupo de WhatsApp del Workshop VIP «Prospecta sin Rogar» (/graciasvipworkshop). */
+export const GRUPO_WHATSAPP_VIPWORKSHOP = (
+  process.env.NEXT_PUBLIC_GRUPO_WHATSAPP_VIPWORKSHOP ||
+  "https://chat.whatsapp.com/KCYewMsFRNYGhBt6IBoAKd"
 ).trim();
 
 /** WhatsApp de soporte (dudas y problemas de pago). */
