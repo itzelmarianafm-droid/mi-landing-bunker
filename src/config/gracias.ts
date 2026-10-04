@@ -19,6 +19,16 @@ export const GRUPO_WHATSAPP_VIPWORKSHOP = (
   "https://chat.whatsapp.com/KCYewMsFRNYGhBt6IBoAKd"
 ).trim();
 
+/**
+ * Grupo de WhatsApp del Workshop «Prospecta sin Rogar» (/graciasworkshoppsr).
+ * Este cambia cada sesión. Es solo el valor por defecto / de respaldo; el valor
+ * vigente se puede administrar sin redesplegar (ver /graciasworkshoppsr/README).
+ */
+export const GRUPO_WHATSAPP_PSR = (
+  process.env.NEXT_PUBLIC_GRUPO_WHATSAPP_PSR ||
+  "https://chat.whatsapp.com/FXHCuVu2NPRJB4XTGMj5sX"
+).trim();
+
 /** WhatsApp de soporte (dudas y problemas de pago). */
 export const WHATSAPP_SOPORTE = (
   process.env.NEXT_PUBLIC_WHATSAPP_SOPORTE || "525539013930"
