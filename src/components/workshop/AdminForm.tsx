@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import type { WorkshopConfig } from '@/lib/workshop/config';
 
 // Convertimos entre ISO (con offset de zona horaria) y datetime-local.
@@ -52,6 +52,20 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
   const [status, setStatus] = useState<null | 'saving' | 'ok' | 'error'>(null);
   const [errorMsg, setErrorMsg] = useState('');
   const [graciasWarn, setGraciasWarn] = useState(false);
+
+  // "Ahora" se calcula solo en el navegador (evita desajustes de hidratación).
+  const [now, setNow] = useState<number | null>(null);
+  useEffect(() => {
+    const id = window.setTimeout(() => setNow(Date.now()), 0);
+    return () => window.clearTimeout(id);
+  }, []);
+
+  // Un lote está vencido si su fecha "válido hasta" ya pasó. Si TODOS vencen (o
+  // el evento ya pasó), la landing muestra "Registro cerrado".
+  const tierPast = (endLocal: string) =>
+    now !== null && !!endLocal && Date.parse(localToIso(endLocal, tzOffset)) < now;
+  const allTiersExpired = tiers.length > 0 && now !== null && tiers.every((t) => tierPast(t.endLocal));
+  const eventPast = now !== null && !!eventLocal && Date.parse(localToIso(eventLocal, tzOffset)) < now;
 
   const updateTier = (i: number, field: keyof TierState, value: string) => {
     setTiers((prev) => prev.map((t, idx) => (idx === i ? { ...t, [field]: value } : t)));
@@ -195,6 +209,16 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
       {/* Lotes de precio */}
       <section className="ws-panel mb-5 p-5">
         <h2 className="mb-4 text-sm font-bold uppercase tracking-wider text-[var(--text)]">Lotes de precio</h2>
+
+        {(allTiersExpired || eventPast) && (
+          <div className="mb-4 rounded-lg border border-[#E0564E] bg-[rgba(224,86,78,0.10)] p-3 text-[13px] font-semibold text-[#E0564E]">
+            ⚠ La landing muestra <strong>&ldquo;Registro cerrado&rdquo;</strong>:{' '}
+            {eventPast
+              ? 'la fecha del evento ya pasó. Actualiza el evento a una fecha futura.'
+              : 'ningún lote está vigente. Pon al menos un lote con fecha “Válido hasta” en el futuro (y revisa que el texto coincida con la fecha).'}
+          </div>
+        )}
+
         <div className="space-y-4">
           {tiers.map((t, i) => (
             <div key={i} className="rounded-lg border border-[var(--line)] bg-[var(--panel-2)] p-4">
@@ -216,6 +240,11 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
                 <div>
                   <label className={label}>Válido hasta (CDMX)</label>
                   <input type="datetime-local" className={input} value={t.endLocal} onChange={(e) => updateTier(i, 'endLocal', e.target.value)} />
+                  {tierPast(t.endLocal) && (
+                    <p className="mt-1 text-[11px] font-semibold text-[#E0564E]">
+                      ⚠ Esta fecha ya pasó: este lote no cuenta como vigente.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
