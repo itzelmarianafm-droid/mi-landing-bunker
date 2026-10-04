@@ -14,6 +14,7 @@ interface Row {
   currency?: string;
   tz_offset?: string;
   tz_label?: string;
+  gracias_whatsapp_psr?: string;
 }
 
 const isUrl = (v?: string) => !!v && /^https?:\/\//.test(v);
@@ -40,6 +41,9 @@ function mergeRow(row: Row): WorkshopConfig {
     currency: row.currency || DEFAULT_CONFIG.currency,
     tzOffset: row.tz_offset || DEFAULT_CONFIG.tzOffset,
     tzLabel: row.tz_label || DEFAULT_CONFIG.tzLabel,
+    graciasWhatsappPsr: isUrl(row.gracias_whatsapp_psr)
+      ? row.gracias_whatsapp_psr!
+      : DEFAULT_CONFIG.graciasWhatsappPsr,
   };
 }
 

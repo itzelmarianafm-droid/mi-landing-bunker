@@ -4,6 +4,8 @@
 // El panel de admin guarda cambios en Supabase; getConfig() los lee.
 // =====================================================================
 
+import { GRUPO_WHATSAPP_PSR } from '@/config/gracias';
+
 export interface Tier {
   id: string;
   label: string; // rango de fechas legible
@@ -27,6 +29,7 @@ export interface WorkshopConfig {
   currency: string; // "USD", "MXN", etc.
   tzOffset: string; // offset ISO, ej. "-06:00" (CDMX), "-05:00" (Colombia)
   tzLabel: string; // etiqueta bajo el contador, ej. "Hora de la Ciudad de México"
+  graciasWhatsappPsr: string; // grupo de WhatsApp de la página /graciasworkshoppsr (cambia cada sesión)
 }
 
 export function makeTier(id: string, label: string, price: number, endIso: string): Tier {
@@ -53,6 +56,7 @@ export const DEFAULT_CONFIG: WorkshopConfig = {
   currency: 'USD',
   tzOffset: '-06:00',
   tzLabel: 'Hora de la Ciudad de México',
+  graciasWhatsappPsr: GRUPO_WHATSAPP_PSR,
 };
 
 /** Devuelve el lote activo según el momento dado, o null si el registro cerró. */

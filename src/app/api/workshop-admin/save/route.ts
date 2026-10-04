@@ -75,7 +75,31 @@ export async function POST(req: Request) {
       const detail = await res.text();
       return Response.json({ ok: false, error: detail }, { status: 502 });
     }
-    return Response.json({ ok: true });
+
+    // Link del grupo de WhatsApp de la página de gracias (/graciasworkshoppsr).
+    // Se guarda por separado y de forma tolerante: si la columna
+    // gracias_whatsapp_psr aún no existe en Supabase, NO rompe el guardado del
+    // workshop; simplemente informamos que no se pudo guardar ese campo.
+    let graciasSaved = false;
+    if (typeof body.graciasWhatsappPsr === 'string') {
+      try {
+        const g = await fetch(`${url}/rest/v1/workshop_config?id=eq.1`, {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            apikey: key,
+            Authorization: `Bearer ${key}`,
+            Prefer: 'return=minimal',
+          },
+          body: JSON.stringify({ gracias_whatsapp_psr: String(body.graciasWhatsappPsr) }),
+        });
+        graciasSaved = g.ok;
+      } catch {
+        graciasSaved = false;
+      }
+    }
+
+    return Response.json({ ok: true, graciasSaved });
   } catch (e) {
     return Response.json({ ok: false, error: String(e) }, { status: 500 });
   }

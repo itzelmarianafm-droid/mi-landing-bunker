@@ -34,6 +34,7 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
   const [host, setHost] = useState(initial.host);
   const [checkoutUrl, setCheckoutUrl] = useState(initial.checkoutUrl);
   const [vslUrl, setVslUrl] = useState(initial.vslUrl);
+  const [graciasWhatsappPsr, setGraciasWhatsappPsr] = useState(initial.graciasWhatsappPsr);
   const [currency, setCurrency] = useState(initial.currency);
   const [tzOffset, setTzOffset] = useState(initial.tzOffset);
   const [tzLabel, setTzLabel] = useState(initial.tzLabel);
@@ -48,6 +49,7 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
 
   const [status, setStatus] = useState<null | 'saving' | 'ok' | 'error'>(null);
   const [errorMsg, setErrorMsg] = useState('');
+  const [graciasWarn, setGraciasWarn] = useState(false);
 
   const updateTier = (i: number, field: keyof TierState, value: string) => {
     setTiers((prev) => prev.map((t, idx) => (idx === i ? { ...t, [field]: value } : t)));
@@ -59,6 +61,7 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
   const save = async () => {
     setStatus('saving');
     setErrorMsg('');
+    setGraciasWarn(false);
     const payload = {
       eventIso: localToIso(eventLocal, tzOffset),
       dateLabel,
@@ -69,6 +72,7 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
       host,
       checkoutUrl,
       vslUrl,
+      graciasWhatsappPsr,
       currency,
       tzOffset,
       tzLabel,
@@ -86,6 +90,12 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
         body: JSON.stringify(payload),
       });
       if (res.ok) {
+        const d = await res.json().catch(() => ({}));
+        // Avisa si el link de gracias no se pudo guardar (falta la columna
+        // gracias_whatsapp_psr en Supabase, ajuste de una sola vez).
+        if (graciasWhatsappPsr && d && d.graciasSaved === false) {
+          setGraciasWarn(true);
+        }
         setStatus('ok');
       } else {
         const d = await res.json().catch(() => ({}));
@@ -227,6 +237,18 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
             <label className={label}>Video VSL (embed Vimeo/YouTube)</label>
             <input className={input} value={vslUrl} onChange={(e) => setVslUrl(e.target.value)} placeholder="https://player.vimeo.com/video/..." />
             <p className="mt-1 text-[11px] text-[var(--dim)]">Vimeo: https://player.vimeo.com/video/ID · YouTube: https://www.youtube.com/embed/ID</p>
+          </div>
+          <div>
+            <label className={label}>Grupo de WhatsApp — página de gracias (cada sesión)</label>
+            <input className={input} value={graciasWhatsappPsr} onChange={(e) => setGraciasWhatsappPsr(e.target.value)} placeholder="https://chat.whatsapp.com/..." />
+            <p className="mt-1 text-[11px] text-[var(--dim)]">
+              Grupo al que lleva el botón de <strong>elbunkerdelvendedor.com/graciasworkshoppsr</strong>. Cámbialo por el de la nueva sesión y, al guardar, la página se actualiza al instante.
+            </p>
+            {graciasWarn && (
+              <p className="mt-1 text-[11px] font-semibold text-[#E0A62A]">
+                El grupo de gracias no se guardó: falta crear el campo en la base de datos (ajuste de una sola vez). Lo demás sí se guardó.
+              </p>
+            )}
           </div>
         </div>
       </section>
