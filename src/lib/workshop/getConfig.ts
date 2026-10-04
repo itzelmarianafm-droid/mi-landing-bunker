@@ -14,6 +14,8 @@ interface Row {
   currency?: string;
   tz_offset?: string;
   tz_label?: string;
+  gracias_whatsapp_membresia?: string;
+  gracias_whatsapp_vip?: string;
   gracias_whatsapp_psr?: string;
 }
 
@@ -41,6 +43,12 @@ function mergeRow(row: Row): WorkshopConfig {
     currency: row.currency || DEFAULT_CONFIG.currency,
     tzOffset: row.tz_offset || DEFAULT_CONFIG.tzOffset,
     tzLabel: row.tz_label || DEFAULT_CONFIG.tzLabel,
+    graciasWhatsappMembresia: isUrl(row.gracias_whatsapp_membresia)
+      ? row.gracias_whatsapp_membresia!
+      : DEFAULT_CONFIG.graciasWhatsappMembresia,
+    graciasWhatsappVip: isUrl(row.gracias_whatsapp_vip)
+      ? row.gracias_whatsapp_vip!
+      : DEFAULT_CONFIG.graciasWhatsappVip,
     graciasWhatsappPsr: isUrl(row.gracias_whatsapp_psr)
       ? row.gracias_whatsapp_psr!
       : DEFAULT_CONFIG.graciasWhatsappPsr,

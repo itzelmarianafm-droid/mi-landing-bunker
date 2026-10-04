@@ -34,6 +34,8 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
   const [host, setHost] = useState(initial.host);
   const [checkoutUrl, setCheckoutUrl] = useState(initial.checkoutUrl);
   const [vslUrl, setVslUrl] = useState(initial.vslUrl);
+  const [graciasWhatsappMembresia, setGraciasWhatsappMembresia] = useState(initial.graciasWhatsappMembresia);
+  const [graciasWhatsappVip, setGraciasWhatsappVip] = useState(initial.graciasWhatsappVip);
   const [graciasWhatsappPsr, setGraciasWhatsappPsr] = useState(initial.graciasWhatsappPsr);
   const [currency, setCurrency] = useState(initial.currency);
   const [tzOffset, setTzOffset] = useState(initial.tzOffset);
@@ -72,6 +74,8 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
       host,
       checkoutUrl,
       vslUrl,
+      graciasWhatsappMembresia,
+      graciasWhatsappVip,
       graciasWhatsappPsr,
       currency,
       tzOffset,
@@ -91,9 +95,9 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
       });
       if (res.ok) {
         const d = await res.json().catch(() => ({}));
-        // Avisa si el link de gracias no se pudo guardar (falta la columna
-        // gracias_whatsapp_psr en Supabase, ajuste de una sola vez).
-        if (graciasWhatsappPsr && d && d.graciasSaved === false) {
+        // Avisa si los grupos de gracias no se pudieron guardar (faltan las
+        // columnas gracias_whatsapp_* en Supabase, ajuste de una sola vez).
+        if (d && d.graciasSaved === false) {
           setGraciasWarn(true);
         }
         setStatus('ok');
@@ -238,19 +242,34 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
             <input className={input} value={vslUrl} onChange={(e) => setVslUrl(e.target.value)} placeholder="https://player.vimeo.com/video/..." />
             <p className="mt-1 text-[11px] text-[var(--dim)]">Vimeo: https://player.vimeo.com/video/ID · YouTube: https://www.youtube.com/embed/ID</p>
           </div>
+        </div>
+      </section>
+
+      {/* Grupos de WhatsApp de las páginas de gracias */}
+      <section className="ws-panel mb-5 p-5">
+        <h2 className="mb-1 text-sm font-bold uppercase tracking-wider text-[var(--text)]">Grupos de WhatsApp — páginas de gracias</h2>
+        <p className="mb-4 text-[12px] text-[var(--dim)]">
+          El botón de cada página de gracias lleva a estos grupos. Cámbialos cuando abras una nueva sesión y, al guardar, las páginas se actualizan al instante.
+        </p>
+        <div className="space-y-4">
           <div>
-            <label className={label}>Grupo de WhatsApp — página de gracias (cada sesión)</label>
+            <label className={label}>Membresía — /graciasmembresia</label>
+            <input className={input} value={graciasWhatsappMembresia} onChange={(e) => setGraciasWhatsappMembresia(e.target.value)} placeholder="https://chat.whatsapp.com/..." />
+          </div>
+          <div>
+            <label className={label}>Workshop VIP — /graciasvipworkshop</label>
+            <input className={input} value={graciasWhatsappVip} onChange={(e) => setGraciasWhatsappVip(e.target.value)} placeholder="https://chat.whatsapp.com/..." />
+          </div>
+          <div>
+            <label className={label}>Prospecta sin Rogar — /graciasworkshoppsr</label>
             <input className={input} value={graciasWhatsappPsr} onChange={(e) => setGraciasWhatsappPsr(e.target.value)} placeholder="https://chat.whatsapp.com/..." />
-            <p className="mt-1 text-[11px] text-[var(--dim)]">
-              Grupo al que lleva el botón de <strong>elbunkerdelvendedor.com/graciasworkshoppsr</strong>. Cámbialo por el de la nueva sesión y, al guardar, la página se actualiza al instante.
-            </p>
-            {graciasWarn && (
-              <p className="mt-1 text-[11px] font-semibold text-[#E0A62A]">
-                El grupo de gracias no se guardó: falta crear el campo en la base de datos (ajuste de una sola vez). Lo demás sí se guardó.
-              </p>
-            )}
           </div>
         </div>
+        {graciasWarn && (
+          <p className="mt-3 text-[11px] font-semibold text-[#E0A62A]">
+            Los grupos de gracias no se guardaron: faltan los campos en la base de datos (ajuste de una sola vez). Lo demás sí se guardó.
+          </p>
+        )}
       </section>
 
       {/* Guardar */}

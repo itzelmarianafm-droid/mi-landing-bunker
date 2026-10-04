@@ -76,12 +76,20 @@ export async function POST(req: Request) {
       return Response.json({ ok: false, error: detail }, { status: 502 });
     }
 
-    // Link del grupo de WhatsApp de la página de gracias (/graciasworkshoppsr).
-    // Se guarda por separado y de forma tolerante: si la columna
-    // gracias_whatsapp_psr aún no existe en Supabase, NO rompe el guardado del
-    // workshop; simplemente informamos que no se pudo guardar ese campo.
+    // Links de los grupos de WhatsApp de las páginas de gracias. Se guardan por
+    // separado y de forma tolerante: si las columnas gracias_whatsapp_* aún no
+    // existen en Supabase, NO rompe el guardado del workshop; solo informamos
+    // que no se pudieron guardar esos campos.
+    const graciasPatch: Record<string, string> = {};
+    if (typeof body.graciasWhatsappMembresia === 'string')
+      graciasPatch.gracias_whatsapp_membresia = String(body.graciasWhatsappMembresia);
+    if (typeof body.graciasWhatsappVip === 'string')
+      graciasPatch.gracias_whatsapp_vip = String(body.graciasWhatsappVip);
+    if (typeof body.graciasWhatsappPsr === 'string')
+      graciasPatch.gracias_whatsapp_psr = String(body.graciasWhatsappPsr);
+
     let graciasSaved = false;
-    if (typeof body.graciasWhatsappPsr === 'string') {
+    if (Object.keys(graciasPatch).length > 0) {
       try {
         const g = await fetch(`${url}/rest/v1/workshop_config?id=eq.1`, {
           method: 'PATCH',
@@ -91,7 +99,7 @@ export async function POST(req: Request) {
             Authorization: `Bearer ${key}`,
             Prefer: 'return=minimal',
           },
-          body: JSON.stringify({ gracias_whatsapp_psr: String(body.graciasWhatsappPsr) }),
+          body: JSON.stringify(graciasPatch),
         });
         graciasSaved = g.ok;
       } catch {

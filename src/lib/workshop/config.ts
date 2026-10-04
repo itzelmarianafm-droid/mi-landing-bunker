@@ -4,7 +4,11 @@
 // El panel de admin guarda cambios en Supabase; getConfig() los lee.
 // =====================================================================
 
-import { GRUPO_WHATSAPP_PSR } from '@/config/gracias';
+import {
+  GRUPO_WHATSAPP,
+  GRUPO_WHATSAPP_VIPWORKSHOP,
+  GRUPO_WHATSAPP_PSR,
+} from '@/config/gracias';
 
 export interface Tier {
   id: string;
@@ -29,7 +33,10 @@ export interface WorkshopConfig {
   currency: string; // "USD", "MXN", etc.
   tzOffset: string; // offset ISO, ej. "-06:00" (CDMX), "-05:00" (Colombia)
   tzLabel: string; // etiqueta bajo el contador, ej. "Hora de la Ciudad de México"
-  graciasWhatsappPsr: string; // grupo de WhatsApp de la página /graciasworkshoppsr (cambia cada sesión)
+  // Grupos de WhatsApp de las páginas de gracias (editables cada sesión).
+  graciasWhatsappMembresia: string; // /graciasmembresia
+  graciasWhatsappVip: string; // /graciasvipworkshop
+  graciasWhatsappPsr: string; // /graciasworkshoppsr
 }
 
 export function makeTier(id: string, label: string, price: number, endIso: string): Tier {
@@ -56,6 +63,8 @@ export const DEFAULT_CONFIG: WorkshopConfig = {
   currency: 'USD',
   tzOffset: '-06:00',
   tzLabel: 'Hora de la Ciudad de México',
+  graciasWhatsappMembresia: GRUPO_WHATSAPP,
+  graciasWhatsappVip: GRUPO_WHATSAPP_VIPWORKSHOP,
   graciasWhatsappPsr: GRUPO_WHATSAPP_PSR,
 };
 

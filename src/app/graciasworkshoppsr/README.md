@@ -22,12 +22,18 @@ responde, usa como respaldo `GRUPO_WHATSAPP_PSR` de
 
 ## Ajuste de una sola vez en la base de datos (Supabase)
 
-Para que el panel pueda guardar este link, la tabla `workshop_config` necesita
-una columna nueva. Se hace **una sola vez** en Supabase → **SQL Editor**:
+Para que el panel pueda guardar los links de las páginas de gracias, la tabla
+`workshop_config` necesita tres columnas nuevas. Se hace **una sola vez** en
+Supabase → **SQL Editor**:
 
 ```sql
+alter table workshop_config add column if not exists gracias_whatsapp_membresia text;
+alter table workshop_config add column if not exists gracias_whatsapp_vip text;
 alter table workshop_config add column if not exists gracias_whatsapp_psr text;
 ```
+
+Con esto quedan editables desde el panel las tres páginas: `/graciasmembresia`,
+`/graciasvipworkshop` y `/graciasworkshoppsr`.
 
 Mientras esa columna no exista, el workshop sigue funcionando normal y la página
 de gracias usa el link de respaldo; el panel avisa si el campo no se pudo guardar.
