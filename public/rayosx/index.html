@@ -1,0 +1,444 @@
+<!DOCTYPE html><html lang="es"><head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Diagnóstico Rayos X — El Búnker del Vendedor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Barlow+Condensed:wght@500;600;700&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root{--bg:#0E1216;--bg2:#141A20;--card:#171E25;--card2:#11171D;--line:rgba(255,255,255,.10);--accent:#FF6A1F;--blue:#4FB0C6;--green:#36C275;--red:#ff5a4d;--gold:#E6A13A;--text:#F4F6F8;--muted:#95A1AA;--disp:'Anton',system-ui,sans-serif;--cond:'Barlow Condensed',system-ui,sans-serif;--body:'Barlow',system-ui,-apple-system,sans-serif;box-sizing:border-box;padding-top:env(safe-area-inset-top,0);padding-bottom:env(safe-area-inset-bottom,0)}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;font-family:var(--body);color:var(--text);line-height:1.55;background:radial-gradient(120% 35% at 50% 0%,rgba(255,106,31,.12),transparent 60%),var(--bg)}
+.wrap{max-width:720px;margin:0 auto;padding:26px 18px 80px}
+.eyebrow{font-family:var(--cond);font-weight:700;letter-spacing:.22em;text-transform:uppercase;font-size:12px;color:var(--accent);text-align:center}
+h1{font-family:var(--disp);font-weight:400;font-size:clamp(30px,7vw,48px);line-height:1.02;text-align:center;margin:8px 0 10px}
+h1 .o{color:var(--accent)}
+.lead{text-align:center;color:#d7dde2;font-size:16px;max-width:54ch;margin:0 auto 18px}
+.lead b{color:var(--text)}
+.btn{display:block;width:100%;font-family:var(--cond);font-weight:700;letter-spacing:.03em;text-transform:uppercase;font-size:18px;background:var(--accent);color:#0E1216;border:none;border-radius:12px;padding:15px;cursor:pointer;transition:.14s;margin-top:4px}
+.btn:hover{background:#ff7d38}
+.sec{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:18px 16px;margin:14px 0}
+.sec .st{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--accent);font-size:15px}
+.sec .sd{color:var(--muted);font-size:13px;margin:2px 0 10px}
+.q{margin:15px 0;padding-top:14px;border-top:1px solid var(--line)}
+.q:first-of-type{border-top:0;padding-top:0}
+.ql{font-weight:600;font-size:15px;margin-bottom:5px}
+.hint{font-size:12.5px;color:#b6c0c7;line-height:1.45;margin:0 0 9px;padding:7px 11px;background:rgba(79,176,198,.09);border-left:3px solid var(--blue);border-radius:0 9px 9px 0}
+.hint b{color:var(--blue);font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.04em;font-size:11px}
+.opts{display:flex;flex-wrap:wrap;gap:7px}
+.opt{flex:1 1 auto;min-width:46%;text-align:center;border:1px solid var(--line);background:#0f151b;border-radius:10px;padding:9px 10px;font-size:14px;cursor:pointer;transition:.12s}
+.opt:hover{border-color:var(--accent)}
+.opt.on{background:var(--accent);color:#0E1216;border-color:var(--accent);font-weight:700}
+.opts.scale .opt{min-width:0;flex:1;font-family:var(--cond);font-weight:700;font-size:17px}
+.opts.multi .opt{min-width:30%}
+.scalelbl{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:3px;font-family:var(--cond);text-transform:uppercase;letter-spacing:.04em}
+input,textarea,select{width:100%;background:#0f151b;border:1px solid var(--line);border-radius:10px;padding:11px 12px;color:var(--text);font-family:var(--body);font-size:15px}
+input:focus,textarea:focus,select:focus{outline:none;border-color:var(--accent)}
+textarea{min-height:56px;resize:vertical}
+.row{display:flex;gap:8px}.row .cc{flex:0 0 130px}
+label.fl{display:block;font-weight:600;font-size:14px;margin:12px 0 5px}
+.hide{display:none}
+.progress{height:6px;background:var(--card);border-radius:10px;overflow:hidden;margin:0 0 16px}
+.progress>i{display:block;height:100%;background:var(--accent);width:0;transition:.3s}
+.err{color:var(--red);font-size:13px;text-align:center;margin-top:8px}
+.res h2{font-family:var(--disp);font-weight:400;font-size:28px;text-align:center;margin:6px 0}
+.tier{text-align:center;border-radius:14px;padding:14px;margin:12px 0;border:2px solid var(--accent);background:rgba(255,106,31,.08)}
+.tier .tn{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);font-size:20px}
+.tier .td{color:#d7dde2;font-size:14px;margin-top:4px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:14px 0}
+@media(max-width:620px){.grid2{grid-template-columns:1fr}.row .cc{flex:0 0 112px}}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px}
+.panel h3{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);font-size:15px;margin:0 0 8px;text-align:center}
+svg{width:100%;height:auto;display:block}
+.bar{margin:9px 0}
+.bar .bl{display:flex;justify-content:space-between;font-size:13px;margin-bottom:3px}
+.bar .bl b{font-weight:600}.bar .bl span{color:var(--muted);font-family:var(--cond);font-weight:600;font-size:12px}
+.track{height:10px;background:#0f151b;border-radius:8px;overflow:hidden;border:1px solid var(--line)}
+.track>i{display:block;height:100%}
+.leak{color:var(--red)!important}
+.readout{background:var(--card);border:1px solid var(--line);border-left:3px solid var(--accent);border-radius:12px;padding:14px;margin:12px 0}
+.readout h3{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--accent);font-size:15px;margin:0 0 6px}
+.readout p{font-size:14.5px;margin:6px 0}.readout .pri{color:var(--red);font-weight:700}
+.chips{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.chip{background:#0f151b;border:1px solid var(--accent);border-radius:20px;padding:4px 12px;font-size:13px;color:var(--accent);font-family:var(--cond);font-weight:700}
+.openrev{background:var(--card2);border:1px dashed var(--gold);border-radius:12px;padding:13px;margin:12px 0;font-size:13.5px}
+.openrev h3{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.04em;color:var(--gold);font-size:14px;margin:0 0 6px}
+.openrev .oq{color:var(--muted);font-size:12px;margin-top:8px}.openrev .oa{color:var(--text);font-style:italic}
+.note{background:rgba(79,176,198,.1);border:1px solid var(--blue);border-radius:12px;padding:13px;margin:14px 0;font-size:14px;color:#d7dde2}.note b{color:var(--blue)}
+.gauge{margin:11px 0 0}
+.gauge .gl{display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px}.gauge .gl b{color:var(--accent);font-family:var(--cond);font-weight:700}
+.gtrack{height:13px;background:#0f151b;border:1px solid var(--line);border-radius:8px;overflow:hidden}.gtrack>i{display:block;height:100%;background:var(--accent)}
+.growthviz{margin:12px 0 0}
+.gv{margin:8px 0}
+.gvtop{display:flex;justify-content:space-between;font-size:12.5px;margin-bottom:3px}.gvtop span:first-child{font-family:var(--cond);font-weight:700;text-transform:uppercase;color:var(--muted)}.gvtop span:last-child{color:#d7dde2}
+.gvt{height:16px;background:#0f151b;border:1px solid var(--line);border-radius:8px;overflow:hidden}.gvt>i{display:block;height:100%;background:var(--accent)}
+.gvmult{text-align:center;font-family:var(--disp);color:var(--accent);font-size:24px;line-height:1;margin-top:6px}.gvmult small{display:block;font-family:var(--cond);font-weight:600;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;margin-top:2px}
+.cta2{border-radius:14px;padding:16px;margin:14px 0}
+.cta2.join{background:rgba(255,106,31,.1);border:2px solid var(--accent)}
+.cta2.member{background:var(--card);border:1px solid var(--line)}
+.cta2 h3{font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.03em;color:var(--accent);font-size:17px;margin:0 0 5px}
+.cta2 p{font-size:14px;margin:0 0 11px;color:#d7dde2}
+.cta2 a{display:block;text-align:center;font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:16px;border-radius:10px;padding:13px;text-decoration:none}
+.cta2.join a{background:var(--accent);color:#0E1216}
+.cta2.member a{background:transparent;color:var(--accent);border:1px solid var(--accent)}
+.ctaurl{text-align:center;color:var(--muted);font-size:11px;margin-top:7px;font-family:var(--cond);letter-spacing:.03em}
+.wabtn{display:block;text-align:center;background:#25D366;color:#063524;font-family:var(--cond);font-weight:700;text-transform:uppercase;letter-spacing:.03em;font-size:15px;border-radius:10px;padding:13px;text-decoration:none;margin-top:10px}
+.wasmall{display:inline-block;color:#25D366;font-size:13px;text-decoration:none;margin-top:10px}
+.foot{text-align:center;font-family:var(--cond);font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-size:12px;margin-top:26px}
+.demo{position:fixed;bottom:0;left:0;right:0;text-align:center;font-family:var(--cond);font-weight:600;font-size:11px;color:#0E1216;background:var(--accent);padding:6px 12px calc(6px + env(safe-area-inset-bottom,0))}
+.q.missing{outline:2px solid var(--red);outline-offset:6px;border-radius:12px}
+input.missing,textarea.missing,select.missing{border-color:var(--red)!important;box-shadow:0 0 0 2px rgba(255,90,77,.25)}
+.printbrand{display:none}
+@media print{
+  .demo,.progress,#form,#go,#err,.foot{display:none!important}
+  .wrap>.eyebrow,.wrap>h1,.wrap>.lead{display:none!important}
+  #result .btn{display:none!important}
+  .wrap{max-width:100%;padding:0 6mm}
+  #result{display:block!important;margin:0}
+  #result .eyebrow{margin-top:0!important}
+  .grid2{grid-template-columns:1fr 1fr!important}
+  .printbrand{display:block;text-align:center;font-family:var(--disp);color:var(--accent);font-size:17pt;margin:0 0 2px}
+  body{background:#0E1216}
+  *{-webkit-print-color-adjust:exact!important;print-color-adjust:exact!important}
+}
+</style></head><body>
+<div class="wrap">
+  <div class="eyebrow">El Búnker del Vendedor · Diagnóstico</div>
+  <h1>Rayos <span class="o">X</span> de tu sistema de ventas</h1>
+  <p class="lead">Descubre <b>en qué parte de tu sistema estás parado</b>, qué pilar afinar primero y con qué estrategia empezar a atraer prospectos según tus recursos de hoy. <b>Responde pensando en un solo producto o negocio.</b></p>
+
+  <div id="gate" class="sec" style="max-width:440px;margin:18px auto">
+    <div class="st">Acceso al diagnóstico</div>
+    <div class="sd">Ingresa tu clave de acceso para comenzar. Cada clave es personal y de un solo uso.</div>
+    <label class="fl" for="gatecode">Clave de acceso</label>
+    <input id="gatecode" placeholder="Ej.: BNK-XXXX-XXX" autocomplete="off" style="text-transform:uppercase;letter-spacing:.04em">
+    <button class="btn" id="gatebtn" style="margin-top:12px">Validar y comenzar</button>
+    <div class="err hide" id="gateerr"></div>
+    <div style="text-align:center"><a class="wasmall" href="https://wa.me/525539013930" target="_blank" rel="noopener">💬 ¿Problemas con tu clave? Escríbenos por WhatsApp</a></div>
+  </div>
+
+  <div class="progress"><i id="prog"></i></div>
+  <form id="form"></form>
+  <button class="btn" id="go">Ver mi radiografía</button>
+  <div class="err hide" id="err">Faltan respuestas por contestar (quedaron marcadas en rojo). Complétalas para ver tu radiografía.</div>
+  <div class="err hide" id="senderr"></div>
+  <div style="text-align:center"><a class="wasmall" href="https://wa.me/525539013930" target="_blank" rel="noopener">💬 ¿Dudas para contestar? Escríbenos por WhatsApp</a></div>
+
+  <div id="result" class="res hide"></div>
+  <div class="foot">Vender no se improvisa. Se entrena. · El Búnker del Vendedor</div>
+</div>
+
+
+<script>
+/* ====== CONEXIONES (lo único que tú llenas) ====== */
+const SB_URL="https://pddxpbbtksvwasxcfhux.supabase.co";   // <-- Project URL de Supabase
+const SB_ANON="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBkZHhwYmJ0a3N2d2FzeGNmaHV4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM0Nzk5OTYsImV4cCI6MjA5OTA1NTk5Nn0.1r7tEMp4IBOU2QAkQLJzw2hO6S-M9DjgTrW0GwQthns";                       // <-- anon public key de Supabase (pública, segura)
+const GAS_URL="https://script.google.com/macros/s/AKfycby4iL4YTpupYiYP7yQnNmwZjyxwY0o3ZvLPSp_k7vKvqW1BLgagrkVQbcqz1OPM4BN4HA/exec";                                  // <-- URL del Web App de Google Apps Script (Google Sheet + correo). Vacío = solo Supabase.
+let _sb=null; try{ if(window.supabase&&!SB_URL.includes("TU-PROYECTO")) _sb=window.supabase.createClient(SB_URL,SB_ANON); }catch(e){}
+function enviarLead(d){
+  // Google Sheet + correo. El guardado en Supabase va aparte, vía la RPC segura enviarRayosx().
+  try{ if(GAS_URL) fetch(GAS_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(d)}); }catch(e){}
+}
+async function validarClave(code){
+  if(!_sb) return 'ok';
+  try{ const {data,error}=await _sb.rpc('validar_clave',{p_code:code}); return error?'error':data; }catch(e){ return 'error'; }
+}
+async function enviarRayosx(code,d){
+  if(!_sb) return {ok:true,demo:true};
+  try{ const {data,error}=await _sb.rpc('enviar_rayosx',{p_code:code,p_data:d}); return error?{ok:false,motivo:'error'}:data; }catch(e){ return {ok:false,motivo:'error'}; }
+}
+/* ================================================= */
+const CC=["+52 México","+57 Colombia","+1 EE.UU./Canadá","+54 Argentina","+56 Chile","+51 Perú","+593 Ecuador","+502 Guatemala","+503 El Salvador","+504 Honduras","+505 Nicaragua","+506 Costa Rica","+507 Panamá","+58 Venezuela","+591 Bolivia","+595 Paraguay","+598 Uruguay","+34 España","Otro"];
+const IMPL=[
+ {k:"ingresos",q:"¿Tu negocio genera ingresos hoy con este producto?",o:[["Aún no",0],["De vez en cuando",1],["Sí, de forma constante",2]]},
+ {k:"pauta",q:"¿Cuánto puedes invertir al mes en publicidad?",help:"Montos en pesos mexicanos; el equivalente aproximado en dólares va entre paréntesis.",o:[["Nada por ahora",0],["Menos de $2,000 MXN (≈ $110 USD)",1],["$2,000–$10,000 MXN (≈ $110–$550 USD)",2],["Más de $10,000 MXN (≈ $550+ USD)",3]]},
+ {k:"delegar",q:"Además de la pauta, ¿tienes presupuesto para pagar a una agencia o equipo que te EJECUTE la estrategia?",help:"No es lo mismo invertir $10,000 MXN (≈ $550 USD) en anuncios que, además, tener para pagarle a alguien que te los haga y te monte el embudo.",o:[["No",0],["Algo",1],["Sí, puedo delegarlo",2]]},
+ {k:"tiempo",q:"¿Cuánto tiempo al día le dedicas a vender/prospectar?",o:[["No le dedico tiempo aún",0],["Menos de 30 min",1],["30–60 min",2],["1–2 horas",3],["Más de 2 h",4]]},
+ {k:"canal",q:"Hoy, ¿de dónde llegan principalmente tus clientes?",help:"Elige tu fuente principal de clientes en este momento, aunque uses varias.",o:[["Todavía no me llegan",0],["Recomendación o boca en boca",1],["Prospecto en frío (yo los busco)",2],["Mi contenido en redes (orgánico)",3],["Anuncios pagados",4],["Tengo un embudo completo funcionando",5]]},
+ {k:"oferta",q:"¿Tu oferta o servicio está definido y con precio?",help:"Un SÍ es cuando tu oferta es clara y atractiva, suma bonos que incentivan la compra, y el cliente siente que se lleva más de lo que paga. Y el precio: ¿va con el valor que entregas, o todavía hay que ajustarlo o comunicarlo mejor?",o:[["No",0],["Más o menos",1],["Sí, muy claro",2]]},
+];
+const TOOLSQ=[
+ {k:"wa",q:"¿Usas WhatsApp (de preferencia Business) para vender?",o:[["No",0],["Sí",1]]},
+ {k:"publica",q:"¿Publicas contenido de forma constante en tus redes?",help:"“Constante” es al menos algunas veces por semana, con intención de atraer, no solo subir por subir.",o:[["No / casi nunca",0],["A veces",1],["Sí, constante",2]]},
+ {k:"crm",q:"¿Tienes un CRM o autorespondedor funcionando?",o:[["No",0],["Sí",1]]},
+ {k:"web",q:"¿Tienes página web, landing o embudo armado?",o:[["No",0],["Sí",1]]},
+ {k:"equipo",q:"¿Tienes equipo o agencia que te apoye?",o:[["No",0],["Sí",1]]},
+];
+const REDES=["Instagram","Facebook","TikTok","YouTube","LinkedIn","Ninguna aún"];
+const SYS=[
+ ["Tengo claro a quién le vendo y de dónde salen mis prospectos","Nicho","Un SÍ es: sé qué nichos y subnichos puedo atacar, tengo clara la transformación final de mi producto, y sé dónde los encuentro online y offline (redes, blogs, grupos, eventos)."],
+ ["Mi contenido o mensaje sí llama la atención","Atención","Un NO suele verse así: publico y nadie me hace caso, no tengo vistas ni reproducciones, casi nadie me pregunta ni reacciona."],
+ ["Logro que me dejen sus datos o me escriban","Captar datos","Un SÍ es: la gente levanta la mano (me escribe, deja su número, agenda), no solo mira de lejos."],
+ ["Tengo una forma de capturar sus datos (nombre, teléfono, correo) y los organizo y califico","Base de datos","Un SÍ es: tengo una herramienta, formulario o al menos un Excel/base donde guardo a cada prospecto con sus datos, lo organizo y lo califico por interés o prioridad. Un NO es: los dejo en el chat o la memoria y se me pierden."],
+ ["La gente confía en mí antes de que le venda","Confianza","Un SÍ es: me perciben como autoridad y me creen; no dudan de mí ni me regatean por desconfianza."],
+ ["Sé presentar mi oferta para que la quieran","Oferta","Un SÍ es: cuando presento, se entiende el valor y la quieren; no me dicen “déjame lo pienso” por no haber entendido."],
+ ["Cierro y me pagan sin perseguir","Cierre","Un SÍ es: pido la venta sin miedo y me pagan; no se me caen ventas que ya estaban casi hechas."],
+ ["Doy seguimiento constante a mis prospectos","Seguimiento","Un SÍ es: tengo una forma de retomar a quien no compró de inmediato, con orden y sin que se me pierdan."],
+ ["Sé manejar y debatir objeciones","Objeciones","Un SÍ es: cuando me dicen “está caro”, “lo voy a pensar” o “no tengo tiempo”, sé responder y avanzar sin discutir."],
+];
+const OPEN=[
+ ["transformacion","En una frase, ¿cuál es la transformación o promesa de tu producto?","Ej.: “Ayudo a X a lograr Y en Z tiempo, sin W.” Entre más específico, mejor."],
+ ["nicho","¿A quién exactamente le vendes? (nicho y subnicho)","Ej.: no “mujeres”, sino “mujeres de 35–50 con negocio de estética que no saben vender online”."],
+ ["ofertaprecio","¿Cuál es tu oferta y su precio? (opcional)","Qué incluye y a qué precio la ofreces hoy."],
+];
+const PIL=[
+ ["Mentalidad","Mentalidad","Tu cabeza para vender: seguridad, manejo del rechazo, constancia sin que te supervisen, no tomar el “no” como algo personal."],
+ ["Comunicación","Comunic.","El CÓMO lo dices: claridad, escucha, tono, lenguaje corporal, hablar frente a cámara y persuasión."],
+ ["Proceso comercial","Proceso","La técnica paso a paso: prospectar, perfilar, presentar, manejar objeciones, cerrar y dar seguimiento sin improvisar."],
+ ["Dominio del negocio","Dominio","Conocer a fondo lo que vendes: el problema que resuelves, tu mecanismo, tus diferenciadores, tu industria y tu competencia."],
+ ["Herramientas e IA","Herram.","Qué tan avanzado estás con IA y herramientas: ¿sabes escribir guiones y anuncios con IA, crear imágenes y publicidad con IA, armar embudos con IA y hacer propuestas comerciales con IA? (1 = nada · 5 = lo hago solo y rápido)"],
+ ["Actividad y rutina","Rutina","Tu motor: una semana comercial con metas de actividad, seguimiento operativo, registro de lo que haces y revisión semanal."],
+ ["Contenido y atracción","Contenido","El frente del embudo: copy que engancha, contenido con función, campañas y convertir ese contenido en conversaciones de venta."],
+];
+
+const RATE=18.23; // MXN por USD (aprox.)
+const URL_UNIRME="https://www.elbunkerdelvendedor.com/membresia"; // página de venta de la membresía
+const URL_PLATAFORMA="https://hotmart.com/";                      // acceso de alumnos (Hotmart)
+const WA_SOP="https://wa.me/525539013930";                       // soporte por WhatsApp
+const CANAL_LBL=["aún no te llegan clientes","recomendación o boca en boca","prospección en frío (tú los buscas)","tu contenido orgánico en redes","anuncios pagados","un embudo completo"];
+// ---- render ----
+const form=document.getElementById('form');
+let hid=0;
+function hintHTML(txt){return txt?'<div class="hint"><b>Guía</b> · '+txt+'</div>':'';}
+function moneyQ(k,ql,hp){return '<div class="q"><div class="ql">'+ql+'</div>'+hintHTML(hp)+'<div class="row"><input type="number" min="0" inputmode="numeric" id="m_'+k+'" placeholder="Ej. 45000" style="flex:1;min-width:0"><select id="c_'+k+'" class="cc"><option value="MXN">Pesos / mes</option><option value="USD">USD / mes</option></select></div></div>';}
+function optGroup(name,opts,cls){return '<div class="opts '+(cls||'')+'">'+opts.map(o=>'<div class="opt" data-n="'+name+'" data-v="'+o[1]+'">'+o[0]+'</div>').join('')+'</div>';}
+function q(ql,hp,body){return '<div class="q"><div class="ql">'+ql+'</div>'+hintHTML(hp)+body+'</div>';}
+let H='';
+// Paso 0
+H+='<div class="sec"><div class="st">Empecemos</div><div class="sd">Enfoca todo el diagnóstico en UN solo producto o servicio.</div>';
+H+='<label class="fl">Nombre del producto o servicio en el que te vas a enfocar</label><input id="producto" placeholder="Ej.: Mentoría de ventas para coaches">';
+H+='</div>';
+// Paso 1
+H+='<div class="sec"><div class="st">Paso 1 · Tu punto de implementación</div><div class="sd">Tus recursos y etapa de hoy. Define con qué estrategia te conviene arrancar.</div>';
+H+=q(IMPL[0].q,IMPL[0].help,optGroup(IMPL[0].k,IMPL[0].o));
+H+=moneyQ('facturaActual',"¿Cuánto facturas hoy al mes con este producto?","Escribe el monto y elige la moneda. Si aún no vendes con este producto, pon 0.");
+H+=moneyQ('metaFactura',"¿A cuánto te gustaría llegar al mes en los próximos 6–12 meses, puliendo tus habilidades?","Tu meta realista de facturación mensual para ese periodo.");
+IMPL.slice(1).forEach(x=>{H+=q(x.q,x.help,optGroup(x.k,x.o));});
+H+=q("¿En qué redes tienes presencia? (toca todas las que apliquen)","Selecciona solo donde realmente tienes cuenta activa.",'<div class="opts multi" id="redes">'+REDES.map((r,i)=>'<div class="opt rd" data-i="'+i+'">'+r+'</div>').join('')+'</div>');
+TOOLSQ.forEach(x=>{H+=q(x.q,x.help,optGroup(x.k,x.o));});
+H+='</div>';
+// Paso 2
+H+='<div class="sec"><div class="st">Paso 2 · Tu sistema de ventas (el Santo Grial)</div><div class="sd">¿Qué tan bien funciona hoy cada parte del camino que recorre tu prospecto? Bajo cada pregunta tienes una guía de qué cuenta como “sí”.</div>';
+SYS.forEach((s,i)=>{H+=q(s[0],s[2],optGroup('sys'+i,[["No",0],["A medias",1],["Sí",2]]));});
+H+='<div class="sd" style="margin-top:14px">Y para validar tu nicho y oferta (esto lo revisa tu mentor):</div>';
+OPEN.forEach(o=>{H+='<div class="q"><div class="ql">'+o[1]+'</div>'+hintHTML(o[2])+'<textarea id="op_'+o[0]+'" placeholder="Escríbelo con tus palabras..."></textarea></div>';});
+H+='</div>';
+// Paso 3
+H+='<div class="sec"><div class="st">Paso 3 · Tus habilidades (los 7 pilares)</div><div class="sd">Califícate del 1 (apenas empiezo) al 5 (lo domino). Bajo cada pilar tienes una guía de a qué se refiere.</div>';
+PIL.forEach((p,i)=>{H+=q(p[0],p[2],optGroup('pil'+i,[["1",1],["2",2],["3",3],["4",4],["5",5]],'scale')+'<div class="scalelbl"><span>Apenas empiezo</span><span>Lo domino</span></div>');});
+H+='</div>';
+// Datos
+H+='<div class="sec"><div class="st">Tus datos</div><div class="sd">Para ver tu radiografía personalizada y que te la podamos hacer llegar.</div>';
+H+='<label class="fl">Nombre</label><input id="nombre" placeholder="Tu nombre">';
+H+='<label class="fl">Correo</label><input id="correo" type="email" placeholder="tucorreo@email.com">';
+H+='<label class="fl">Teléfono (WhatsApp)</label><div class="row"><select id="cc" class="cc">'+CC.map(c=>'<option>'+c+'</option>').join('')+'</select><input id="tel" placeholder="55 1234 5678"></div>';
+H+='</div>';
+form.innerHTML=H;
+
+// ---- interaction ----
+const ans={};
+form.querySelectorAll('.opt:not(.rd)').forEach(el=>el.onclick=()=>{const n=el.dataset.n;form.querySelectorAll('.opt[data-n="'+n+'"]').forEach(x=>x.classList.remove('on'));el.classList.add('on');ans[n]=+el.dataset.v;prog();const qel=el.closest('.q');if(qel)qel.classList.remove('missing');});
+const redes=new Set();
+form.querySelectorAll('.opt.rd').forEach(el=>el.onclick=()=>{el.classList.toggle('on');const i=+el.dataset.i;el.classList.contains('on')?redes.add(i):redes.delete(i);prog();const qel=document.getElementById('redes').closest('.q');if(qel)qel.classList.remove('missing');});
+form.querySelectorAll('input,textarea,select').forEach(e=>e.addEventListener('input',()=>{e.classList.remove('missing');const qel=e.closest('.q');if(qel)qel.classList.remove('missing');}));
+const closedN=IMPL.length+TOOLSQ.length+SYS.length+PIL.length;
+function prog(){document.getElementById('prog').style.width=Math.min(100,Object.keys(ans).length/closedN*100)+'%';}
+
+// ---- radar ----
+function radar(values,labels){
+  const N=values.length,R=104,cx=150,cy=142;let s='';
+  for(let r=1;r<=5;r++){let p=[];for(let i=0;i<N;i++){const a=-Math.PI/2+i*2*Math.PI/N;p.push((cx+R*r/5*Math.cos(a)).toFixed(1)+','+(cy+R*r/5*Math.sin(a)).toFixed(1));}s+='<polygon points="'+p.join(' ')+'" fill="none" stroke="rgba(255,255,255,.08)"/>';}
+  for(let i=0;i<N;i++){const a=-Math.PI/2+i*2*Math.PI/N;s+='<line x1="'+cx+'" y1="'+cy+'" x2="'+(cx+R*Math.cos(a)).toFixed(1)+'" y2="'+(cy+R*Math.sin(a)).toFixed(1)+'" stroke="rgba(255,255,255,.08)"/>';}
+  let p=[];for(let i=0;i<N;i++){const a=-Math.PI/2+i*2*Math.PI/N;const rr=R*values[i]/5;p.push((cx+rr*Math.cos(a)).toFixed(1)+','+(cy+rr*Math.sin(a)).toFixed(1));}
+  s+='<polygon points="'+p.join(' ')+'" fill="rgba(255,106,31,.28)" stroke="#FF6A1F" stroke-width="2"/>';
+  for(let i=0;i<N;i++){const a=-Math.PI/2+i*2*Math.PI/N;const rr=R*values[i]/5;s+='<circle cx="'+(cx+rr*Math.cos(a)).toFixed(1)+'" cy="'+(cy+rr*Math.sin(a)).toFixed(1)+'" r="3" fill="#FF6A1F"/>';}
+  for(let i=0;i<N;i++){const a=-Math.PI/2+i*2*Math.PI/N;const lx=cx+(R+20)*Math.cos(a),ly=cy+(R+20)*Math.sin(a);const anc=Math.abs(Math.cos(a))<0.3?'middle':(Math.cos(a)>0?'start':'end');s+='<text x="'+lx.toFixed(1)+'" y="'+(ly+3).toFixed(1)+'" font-size="10" font-family="Barlow Condensed" font-weight="700" fill="#cdd4d9" text-anchor="'+anc+'">'+labels[i]+'</text>';}
+  return '<svg viewBox="0 0 300 300">'+s+'</svg>';
+}
+function email_ok(e){return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(e);}
+function firstOptQ(key){const o=document.querySelector('.opt[data-n="'+key+'"]');return o?o.closest('.q'):null;}
+function validate(){
+  document.querySelectorAll('.missing').forEach(e=>e.classList.remove('missing'));
+  const g=id=>document.getElementById(id);
+  let reqs=[
+    [g('producto'),()=>g('producto').value.trim()!==''],
+    [firstOptQ('ingresos'),()=>'ingresos' in ans],
+    [g('m_facturaActual').closest('.q'),()=>g('m_facturaActual').value.trim()!==''],
+    [g('m_metaFactura').closest('.q'),()=>{const v=g('m_metaFactura').value.trim();return v!==''&&+v>0;}],
+  ];
+  ['pauta','delegar','tiempo','canal','oferta'].forEach(k=>reqs.push([firstOptQ(k),()=>k in ans]));
+  reqs.push([g('redes').closest('.q'),()=>redes.size>0]);
+  ['wa','publica','crm','web','equipo'].forEach(k=>reqs.push([firstOptQ(k),()=>k in ans]));
+  SYS.forEach((s,i)=>reqs.push([firstOptQ('sys'+i),()=>('sys'+i) in ans]));
+  reqs.push([g('op_transformacion').closest('.q'),()=>g('op_transformacion').value.trim()!=='']);
+  reqs.push([g('op_nicho').closest('.q'),()=>g('op_nicho').value.trim()!=='']);
+  PIL.forEach((p,i)=>reqs.push([firstOptQ('pil'+i),()=>('pil'+i) in ans]));
+  reqs.push([g('nombre'),()=>g('nombre').value.trim()!=='']);
+  reqs.push([g('correo'),()=>email_ok(g('correo').value.trim())]);
+  reqs.push([g('tel'),()=>g('tel').value.trim()!=='']);
+  let first=null;
+  reqs.forEach(r=>{if(!r[1]()){if(r[0])r[0].classList.add('missing');if(!first)first=r[0];}});
+  return first;
+}
+
+async function descargarPDF(btn){
+  const el=document.getElementById('result');
+  if(typeof html2canvas==='undefined'||!(window.jspdf&&window.jspdf.jsPDF)){alert('La herramienta de PDF aún está cargando. Intenta de nuevo en unos segundos.');return;}
+  const btns=[...el.querySelectorAll('.btn')]; btns.forEach(b=>b.style.display='none');
+  const old=btn.textContent; btn.textContent='Generando tu PDF...';
+  try{
+    const canvas=await html2canvas(el,{backgroundColor:'#0E1216',scale:2,useCORS:true,logging:false});
+    const {jsPDF}=window.jspdf;
+    const pdf=new jsPDF('p','mm','a4');
+    const pw=210, ph=297, iw=pw, ih=canvas.height*pw/canvas.width;
+    const img=canvas.toDataURL('image/jpeg',0.92);
+    let left=ih, pos=0;
+    pdf.addImage(img,'JPEG',0,0,iw,ih,'','FAST'); left-=ph;
+    while(left>0){ pos-=ph; pdf.addPage(); pdf.addImage(img,'JPEG',0,pos,iw,ih,'','FAST'); left-=ph; }
+    const blob=pdf.output('blob');
+    const filename='Radiografia-RayosX-'+((window._rxNombre||'alumno').replace(/[^\w\s-]/g,'').trim()||'alumno')+'.pdf';
+    let dl=null; try{ if(window.claude&&window.claude.use) dl=await window.claude.use('downloads'); }catch(e){}
+    if(dl){ try{ await dl.save({filename,data:blob}); }catch(e){ if(e&&e.code!=='declined') pdf.save(filename); } }
+    else { pdf.save(filename); }
+  }catch(e){ alert('No se pudo generar el PDF. Intenta de nuevo, o escríbenos por WhatsApp para enviártelo.'); }
+  finally{ btns.forEach(b=>b.style.display=''); btn.textContent=old; }
+}
+document.getElementById('go').onclick=async()=>{
+  const prod=document.getElementById('producto').value.trim();
+  const nombre=document.getElementById('nombre').value.trim();
+  const correo=document.getElementById('correo').value.trim();
+  const tel=document.getElementById('tel').value.trim();
+  const transf=document.getElementById('op_transformacion').value.trim();
+  const nichoTxt=document.getElementById('op_nicho').value.trim();
+  const ofertaTxt=document.getElementById('op_ofertaprecio').value.trim();
+  const faV=document.getElementById('m_facturaActual').value.trim();
+  const mtV=document.getElementById('m_metaFactura').value.trim();
+  const first=validate();
+  if(first){document.getElementById('err').classList.remove('hide');first.scrollIntoView({behavior:'smooth',block:'center'});return;}
+  document.getElementById('err').classList.add('hide');
+  // tier
+  const imp=(ans.ingresos||0)+(ans.pauta||0)+(ans.tiempo||0)+(ans.oferta||0)+(ans.wa||0)+(ans.crm||0)+(ans.web||0)+(ans.equipo||0)+((ans.publica||0)>=2?1:0);
+  let tier,tname,tdesc,strat;
+  if((ans.delegar||0)===2&&(ans.pauta||0)>=2){tier=4;tname="Delegar a agencia o equipo";tdesc="Tienes para invertir en pauta y, además, para pagar quien te lo ejecute.";strat="No necesitas hacerlo todo tú. Tu juego es aprender a dirigir: elegir, briefear y supervisar a la agencia o equipo para que el dinero rinda, y no depender de que “le atinen”. En la membresía/mentoría te enseñamos a tomar esas decisiones con criterio.";}
+  else if(imp<=5){tier=1;tname="Arranque orgánico";tdesc="Tus recursos hoy piden empezar simple y sin gastar.";strat="Empieza 100% orgánico y con lo mínimo: prospección directa, contenido de valor y una rutina diaria de conversaciones. Nada de pagar herramientas todavía. Primero valida tu oferta y genera tus primeros clientes.";}
+  else if(imp<=10){tier=2;tname="Crecimiento mixto";tdesc="Ya puedes sumar algo de estructura a lo orgánico.";strat="Mantén lo orgánico que ya funciona y súmale primeras herramientas (un CRM simple, tu WhatsApp ordenado) y pauta de bajo presupuesto para amplificar tus mejores contenidos y ofertas.";}
+  else{tier=3;tname="Escala con sistema";tdesc="Tienes para construir algo más robusto y automatizado.";strat="Vas por un embudo más completo: página/landing, autorespondedor, pauta constante y automatización. Tu foco ahora es sistematizar y escalar lo que ya vende, no empezar de cero.";}
+  // system
+  const sysv=SYS.map((s,i)=>ans['sys'+i]);
+  let leak=-1;for(let i=0;i<sysv.length;i++){if(sysv[i]<2){leak=i;break;}}
+  const sysAvg=sysv.reduce((a,b)=>a+b,0)/sysv.length;
+  // pillars
+  const pilv=PIL.map((p,i)=>ans['pil'+i]);
+  const pilAvg=pilv.reduce((a,b)=>a+b,0)/pilv.length;
+  const order=pilv.map((v,i)=>[v,i]).sort((a,b)=>a[0]-b[0]);
+  const focus=order.slice(0,3).filter(x=>x[0]<=3);const focusF=focus.length?focus:order.slice(0,2);
+  const estado=sysAvg<1?"Tu sistema aún no está armado: estás empezando a construir el camino.":(sysAvg<1.6?"Tienes partes del camino funcionando, pero se te fuga en varios puntos.":"Tu camino ya jala; te toca afinar y escalar.");
+  // meta de crecimiento (montos abiertos)
+  const faRaw=parseFloat(faV)||0, faCur=document.getElementById('c_facturaActual').value;
+  const mtRaw=parseFloat(mtV)||0, mtCur=document.getElementById('c_metaFactura').value;
+  const actMXN=faCur==='USD'?faRaw*RATE:faRaw, metaMXN=mtCur==='USD'?mtRaw*RATE:mtRaw;
+  const fmt=(n,c)=>'$'+Math.round(n).toLocaleString('es-MX')+' '+c+'/mes';
+  const actDisp=fmt(faRaw,faCur), metaDisp=fmt(mtRaw,mtCur);
+  const multNum=(actMXN>0&&metaMXN>actMXN)?metaMXN/actMXN:null;
+  const multTxt=multNum?(multNum>=2?Math.round(multNum):multNum.toFixed(1)):null;
+  let growthTxt;
+  if(actMXN<=0){growthTxt="Hoy aún no facturas con este producto; tu meta es "+metaDisp+". El primer salto —de cero a tus primeras ventas constantes— es el más importante y 100% alcanzable con el sistema correcto.";}
+  else if(multNum){growthTxt="Quieres pasar de "+actDisp+" a "+metaDisp+" — un salto de ≈"+multTxt+"x. Un crecimiento así no es de suerte: se construye afinando tu sistema y entrenando los pilares que te marcamos abajo.";}
+  else{growthTxt="Tu meta ("+metaDisp+") está muy cerca de donde ya estás ("+actDisp+"). Con tu base, probablemente puedes apuntar más alto de lo que crees.";}
+  const sysPct=Math.round(sysAvg/2*100), pilPct=Math.round(pilAvg/5*100);
+  const hoyPct=metaMXN>0?Math.max(4,Math.min(100,Math.round(actMXN/metaMXN*100))):0;
+  // system radar + bars
+  let bars='';
+  SYS.forEach((s,i)=>{const v=sysv[i];const col=v==2?'var(--green)':(v==1?'var(--accent)':'var(--red)');const isleak=i===leak;bars+='<div class="bar"><div class="bl"><b class="'+(isleak?'leak':'')+'">'+s[1]+(isleak?' ← prioridad':'')+'</b><span>'+["No","A medias","Sí"][v]+'</span></div><div class="track"><i style="width:'+(v*50)+'%;background:'+col+'"></i></div></div>';});
+
+  const R=document.getElementById('result');
+  window._rxNombre=nombre;
+  const d={
+    nombre, correo, telefono: document.getElementById("cc").value+" "+tel, producto: prod,
+    factura_actual_monto: faRaw, factura_actual_moneda: faCur,
+    meta_monto: mtRaw, meta_moneda: mtCur,
+    nivel_implementacion: tname,
+    prioridad_sistema: (leak>=0?SYS[leak][1]:"Sistema sólido"),
+    promedio_habilidades: +pilAvg.toFixed(2),
+    porcentaje_sistema: sysPct,
+    canal: CANAL_LBL[ans.canal],
+    transformacion: transf, nicho: nichoTxt, oferta_precio: ofertaTxt,
+    respuestas: { ans: ans, redes: [...redes] },
+    resultado: { nivel: tname, prioridad: (leak>=0?SYS[leak][1]:null), foco: focusF.map(x=>PIL[x[1]][0]), multiplicador: multTxt, sistema_pct: sysPct, habilidades_pct: pilPct, estado: estado }
+  };
+  // ENVÍO SEGURO (Fase 2): valida la clave + guarda en el servidor (atómico). Solo mostramos el resultado si ok.
+  const senderr=document.getElementById('senderr'); senderr.classList.add('hide');
+  const goBtn=document.getElementById('go'), goOld=goBtn.textContent;
+  goBtn.textContent='Guardando tu radiografía...'; goBtn.disabled=true;
+  const envio=await enviarRayosx(window._rxCode, d);
+  goBtn.textContent=goOld; goBtn.disabled=false;
+  if(!envio||!envio.ok){
+    senderr.textContent = (envio&&envio.motivo==='usada')
+      ? 'Esta clave ya se usó. Si necesitas volver a contestar, escríbenos por WhatsApp.'
+      : (envio&&envio.motivo==='invalida')
+        ? 'Tu clave ya no es válida. Escríbenos por WhatsApp para ayudarte.'
+        : 'No pudimos guardar tu diagnóstico. Revisa tu conexión e intenta de nuevo en unos segundos.';
+    senderr.classList.remove('hide'); senderr.scrollIntoView({behavior:'smooth',block:'center'});
+    return;
+  }
+  try{ enviarLead(d); }catch(e){}
+  R.innerHTML=
+   '<div class="printbrand">El Búnker del Vendedor</div>'+
+   '<div class="eyebrow" style="margin-top:24px">Radiografía de '+nombre+'</div>'+
+   '<h2>Tu producto: <span style="color:var(--accent)">'+prod+'</span></h2>'+
+   '<div class="tier"><div class="tn">Nivel de implementación: '+tname+'</div><div class="td">'+tdesc+'</div></div>'+
+   '<div class="grid2">'+
+     '<div class="panel"><h3>Tu sistema (dónde falla)</h3>'+bars+'</div>'+
+     '<div class="panel"><h3>Tus habilidades (dónde fallas)</h3>'+radar(pilv,PIL.map(p=>p[1]))+'</div>'+
+   '</div>'+
+   '<div class="readout"><h3>Dónde estás</h3><p>'+estado+'</p>'+
+     '<div class="gauge"><div class="gl"><span>Tu sistema de ventas</span><b>'+sysPct+'%</b></div><div class="gtrack"><i style="width:'+sysPct+'%"></i></div></div>'+
+     '<div class="gauge"><div class="gl"><span>Tus habilidades</span><b>'+pilPct+'% · '+pilAvg.toFixed(1)+'/5</b></div><div class="gtrack"><i style="width:'+pilPct+'%;background:var(--blue)"></i></div></div></div>'+
+   '<div class="readout"><h3>Tu meta de crecimiento</h3><p>'+growthTxt+'</p>'+
+     '<div class="growthviz">'+
+       '<div class="gv"><div class="gvtop"><span>Hoy</span><span>'+actDisp+'</span></div><div class="gvt"><i style="width:'+hoyPct+'%;background:var(--muted)"></i></div></div>'+
+       '<div class="gv"><div class="gvtop"><span>Meta</span><span>'+metaDisp+'</span></div><div class="gvt"><i style="width:100%"></i></div></div>'+
+       (multTxt?'<div class="gvmult">≈'+multTxt+'x<small>el salto que quieres dar</small></div>':'')+
+     '</div></div>'+
+   '<div class="readout"><h3>Tu prioridad a corregir</h3>'+(leak>=0?'<p>La primera fuga de tu camino está en <span class="pri">'+SYS[leak][1]+'</span>. Mientras esa pieza no funcione, lo que venga después se cae. Es por donde debes empezar.</p>':'<p>Tu camino está sólido de punta a punta. Tu prioridad es <span class="pri">escalar y sistematizar</span>.</p>')+'</div>'+
+   '<div class="readout"><h3>Primeras habilidades en las que enfocarte</h3><div class="chips">'+focusF.map(x=>'<span class="chip">'+PIL[x[1]][0]+'</span>').join('')+'</div></div>'+
+   '<div class="readout"><h3>Con qué estrategia empezar a atraer prospectos</h3><p>'+strat+'</p>'+
+     '<p style="margin-top:6px"><b style="color:var(--accent)">Tu canal hoy:</b> tus clientes llegan sobre todo por '+CANAL_LBL[ans.canal]+'. '+
+     (ans.canal<=1?"Depender de eso te deja sin control: no puedes subirle ni bajarle a tu flujo de prospectos. El método te abre canales que sí controlas.":(ans.canal>=4?"Ya atraes con "+(ans.canal===5?"un embudo":"pauta")+"; tu foco no es empezar, sino afinar la conversión para que cada peso rinda más.":"Tienes un canal activo; el reto es volverlo constante y predecible, no dejarlo a la suerte."))+'</p></div>'+
+   '<div class="openrev"><h3>Lo que tu mentor va a revisar</h3><div class="oq">Transformación / promesa:</div><div class="oa">“'+transf+'”</div><div class="oq">Nicho y subnicho:</div><div class="oa">“'+nichoTxt+'”</div>'+(ofertaTxt?'<div class="oq">Oferta y precio:</div><div class="oa">“'+ofertaTxt+'”</div>':'')+'<p style="margin-top:8px;color:var(--muted);font-size:12.5px">Si esto suena genérico o subjetivo, suele ser señal de que el nicho o la oferta aún no están afinados — justo lo que trabajamos contigo.</p></div>'+
+   '<div class="note"><b>Esto es tu radiografía: dónde estás parado hoy.</b> El plan paso a paso —qué hacer, en qué orden y cómo— lo construyes entrenando cada pilar dentro de la membresía, o en una mentoría 1 a 1, donde convertimos esta radiografía en tu ruta personalizada.</div>'+
+   '<div class="cta2 join"><h3>¿Quieres corregir esto?</h3><p>Entrénate en El Búnker del Vendedor y ataca justo los pilares y las fugas que te salieron en tu radiografía. Te cuesta menos que un café al día.</p><a href="'+URL_UNIRME+'" target="_blank" rel="noopener">Quiero entrenarme en el Búnker →</a><div class="ctaurl">www.elbunkerdelvendedor.com/membresia</div></div>'+
+   '<div class="cta2 member"><h3>¿Ya eres parte del Búnker?</h3><p>Entra a tu plataforma y empieza a entrenar justo los pilares y habilidades que este diagnóstico te marcó.</p><a href="'+URL_PLATAFORMA+'" target="_blank" rel="noopener">Entrar a mi plataforma →</a></div>'+
+   '<a class="wabtn" href="'+WA_SOP+'" target="_blank" rel="noopener">💬 ¿Dudas o soporte? Escríbenos por WhatsApp · +52 55 3901 3930</a>'+
+   '<button class="btn" onclick="descargarPDF(this)">⬇ Descargar mi radiografía en PDF</button>'+
+   '<button class="btn" style="background:transparent;color:var(--accent);border:1px solid var(--accent);margin-top:8px" onclick="window.scrollTo({top:0,behavior:\'smooth\'})">Volver arriba</button>';
+  R.classList.remove('hide');R.scrollIntoView({behavior:'smooth'});
+};
+
+/* ====== PANTALLA DE CLAVE (Fase 2) — bloquea el test hasta validar ====== */
+(function(){
+  const senderrEl=document.getElementById('senderr');
+  const waDiv=senderrEl?senderrEl.nextElementSibling:null; // el div del WhatsApp del test (va justo después de #senderr)
+  const TESTUI=[document.querySelector('.progress'),document.getElementById('form'),document.getElementById('go'),document.getElementById('err'),senderrEl,waDiv];
+  function lock(){TESTUI.forEach(e=>{if(e)e.style.display='none';});}
+  function unlock(){TESTUI.forEach(e=>{if(e)e.style.display='';});document.getElementById('gate').style.display='none';}
+  lock();
+  const gb=document.getElementById('gatebtn'), gc=document.getElementById('gatecode'), ge=document.getElementById('gateerr');
+  async function tryValidar(){
+    const code=(gc.value||'').trim().toUpperCase();
+    ge.classList.add('hide');
+    if(!code){ge.textContent='Escribe tu clave de acceso.';ge.classList.remove('hide');return;}
+    const old=gb.textContent; gb.textContent='Validando...'; gb.disabled=true;
+    const r=await validarClave(code);
+    gb.textContent=old; gb.disabled=false;
+    if(r==='ok'){ window._rxCode=code; unlock(); window.scrollTo({top:0,behavior:'smooth'}); }
+    else if(r==='usada'){ ge.textContent='Esta clave ya se usó. Si necesitas volver a contestar, escríbenos por WhatsApp.'; ge.classList.remove('hide'); }
+    else if(r==='invalida'){ ge.textContent='Clave no válida. Revísala o escríbenos por WhatsApp.'; ge.classList.remove('hide'); }
+    else { ge.textContent='No pudimos validar tu clave. Revisa tu conexión e intenta de nuevo.'; ge.classList.remove('hide'); }
+  }
+  gb.onclick=tryValidar;
+  gc.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();tryValidar();}});
+})();
+</script>
+</body></html>
