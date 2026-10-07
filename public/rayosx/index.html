@@ -282,6 +282,22 @@ function validate(){
   return first;
 }
 
+/* Entrega el PDF de forma confiable en todos los dispositivos:
+   - Escritorio y Android Chrome: descarga directa (anchor con download).
+   - iPhone/iPad y navegadores dentro de apps (WhatsApp/IG/FB): abren el PDF
+     para verlo y guardarlo/compartirlo (ahí el atributo "download" no baja nada). */
+function entregarPDF(blob,filename){
+  const url=URL.createObjectURL(blob);
+  const ua=navigator.userAgent||'';
+  const isIOS=/iP(hone|ad|od)/.test(ua)||(/Macintosh/.test(ua)&&(navigator.maxTouchPoints||0)>1);
+  const a=document.createElement('a');
+  if(('download' in a)&&!isIOS){
+    a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove();
+  } else {
+    const w=window.open(url,'_blank'); if(!w) location.href=url;
+  }
+  setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){}},60000);
+}
 async function descargarPDF(btn){
   const el=document.getElementById('result');
   if(typeof html2canvas==='undefined'||!(window.jspdf&&window.jspdf.jsPDF)){alert('La herramienta de PDF aún está cargando. Intenta de nuevo en unos segundos.');return;}
@@ -299,8 +315,8 @@ async function descargarPDF(btn){
     const blob=pdf.output('blob');
     const filename='Radiografia-RayosX-'+((window._rxNombre||'alumno').replace(/[^\w\s-]/g,'').trim()||'alumno')+'.pdf';
     let dl=null; try{ if(window.claude&&window.claude.use) dl=await window.claude.use('downloads'); }catch(e){}
-    if(dl){ try{ await dl.save({filename,data:blob}); }catch(e){ if(e&&e.code!=='declined') pdf.save(filename); } }
-    else { pdf.save(filename); }
+    if(dl){ try{ await dl.save({filename,data:blob}); }catch(e){ if(e&&e.code!=='declined') entregarPDF(blob,filename); } }
+    else { entregarPDF(blob,filename); }
   }catch(e){ alert('No se pudo generar el PDF. Intenta de nuevo, o escríbenos por WhatsApp para enviártelo.'); }
   finally{ btns.forEach(b=>b.style.display=''); btn.textContent=old; }
 }

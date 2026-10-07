@@ -447,7 +447,12 @@ async function downloadLeadPDF(l,btn){
     pdf.addImage(img,'JPEG',0,0,iw,ih,'','FAST'); left-=ph;
     while(left>0){ pos-=ph; pdf.addPage(); pdf.addImage(img,'JPEG',0,pos,iw,ih,'','FAST'); left-=ph; }
     const filename='Radiografia-RayosX-'+((l.nombre||'alumno').replace(/[^\w\s-]/g,'').trim()||'alumno')+'.pdf';
-    pdf.save(filename);
+    const blob=pdf.output('blob'); const url=URL.createObjectURL(blob);
+    const ua=navigator.userAgent||''; const isIOS=/iP(hone|ad|od)/.test(ua)||(/Macintosh/.test(ua)&&(navigator.maxTouchPoints||0)>1);
+    const a=document.createElement('a');
+    if(('download' in a)&&!isIOS){ a.href=url; a.download=filename; document.body.appendChild(a); a.click(); a.remove(); }
+    else { const w=window.open(url,'_blank'); if(!w) location.href=url; }
+    setTimeout(()=>{try{URL.revokeObjectURL(url);}catch(e){}},60000);
   }catch(e){ toast('No se pudo generar el PDF. Intenta de nuevo.'); }
   finally{ stage.innerHTML=''; if(btn){btn.textContent=old;btn.disabled=false;} }
 }
