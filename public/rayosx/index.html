@@ -376,6 +376,8 @@ document.getElementById('go').onclick=async()=>{
   if(!envio||!envio.ok){
     senderr.textContent = (envio&&envio.motivo==='usada')
       ? 'Esta clave ya se usó. Si necesitas volver a contestar, escríbenos por WhatsApp.'
+      : (envio&&envio.motivo==='vencida')
+        ? 'Esta clave venció. Escríbenos por WhatsApp para renovarla.'
       : (envio&&envio.motivo==='invalida')
         ? 'Tu clave ya no es válida. Escríbenos por WhatsApp para ayudarte.'
         : 'No pudimos guardar tu diagnóstico. Revisa tu conexión e intenta de nuevo en unos segundos.';
@@ -434,6 +436,7 @@ document.getElementById('go').onclick=async()=>{
     gb.textContent=old; gb.disabled=false;
     if(r==='ok'){ window._rxCode=code; unlock(); window.scrollTo({top:0,behavior:'smooth'}); }
     else if(r==='usada'){ ge.textContent='Esta clave ya se usó. Si necesitas volver a contestar, escríbenos por WhatsApp.'; ge.classList.remove('hide'); }
+    else if(r==='vencida'){ ge.textContent='Esta clave venció. Escríbenos por WhatsApp para renovarla.'; ge.classList.remove('hide'); }
     else if(r==='invalida'){ ge.textContent='Clave no válida. Revísala o escríbenos por WhatsApp.'; ge.classList.remove('hide'); }
     else { ge.textContent='No pudimos validar tu clave. Revisa tu conexión e intenta de nuevo.'; ge.classList.remove('hide'); }
   }

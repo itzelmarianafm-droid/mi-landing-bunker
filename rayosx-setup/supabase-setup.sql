@@ -41,8 +41,11 @@ create table if not exists public.access_codes (
   lead_id uuid,
   tipo text default 'pago',   -- 'pago' | 'cortesia' (gratis)
   nota text,                  -- a quién se le dio / campaña (opcional)
+  expires_at timestamptz,     -- vigencia opcional: null = nunca vence; si now() > expires_at queda vencida
   created_at timestamptz default now()
 );
+-- Por si la tabla ya existía sin la columna de vigencia:
+alter table public.access_codes add column if not exists expires_at timestamptz;
 
 -- ---------- Seguridad: el público (anon) NO lee ni escribe directo ----------
 alter table public.rayos_x_leads enable row level security;
@@ -56,6 +59,7 @@ begin
   select * into r from public.access_codes where code = p_code;
   if not found then return 'invalida'; end if;
   if r.used then return 'usada'; end if;
+  if r.expires_at is not null and now() > r.expires_at then return 'vencida'; end if;
   return 'ok';
 end; $$;
 
@@ -67,6 +71,7 @@ begin
   select * into r from public.access_codes where code = p_code for update;
   if not found then return jsonb_build_object('ok',false,'motivo','invalida'); end if;
   if r.used then return jsonb_build_object('ok',false,'motivo','usada'); end if;
+  if r.expires_at is not null and now() > r.expires_at then return jsonb_build_object('ok',false,'motivo','vencida'); end if;
 
   insert into public.rayos_x_leads(
     nombre,correo,telefono,producto,

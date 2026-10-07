@@ -178,13 +178,15 @@ tr:last-child td{border-bottom:0}
         <div class="formrow">
           <div class="fg"><label>Cantidad</label><input id="genQty" type="number" min="1" max="500" value="10" style="width:90px"></div>
           <div class="fg"><label>Tipo</label><select id="genTipo"><option value="pago">Pago</option><option value="cortesia">Cortesía (gratis)</option></select></div>
-          <div class="fg" style="flex:1;min-width:160px"><label>Nota (opcional)</label><input id="genNota" placeholder="Ej.: regalo webinar octubre"></div>
+          <div class="fg"><label>Vigencia</label><select id="genVig"><option value="none">No vence</option><option value="days">En días</option><option value="date">Hasta fecha</option></select></div>
+          <div class="fg" id="genVigValWrap" style="display:none"><label id="genVigValLbl">Días</label><input id="genVigVal" type="number" min="1" value="3" style="width:130px"></div>
+          <div class="fg" style="flex:1;min-width:140px"><label>Nota (opcional)</label><input id="genNota" placeholder="Ej.: regalo webinar octubre"></div>
           <button class="btn solid" id="genBtn">Generar claves</button>
         </div>
         <div class="tools">
           <input id="searchCodes" placeholder="Buscar clave o nota...">
           <div style="display:flex;gap:8px">
-            <select id="filterCodes"><option value="todas">Todas</option><option value="pago">Pago</option><option value="cortesia">Cortesía</option><option value="disponible">Disponibles</option><option value="usada">Usadas</option></select>
+            <select id="filterCodes"><option value="todas">Todas</option><option value="pago">Pago</option><option value="cortesia">Cortesía</option><option value="disponible">Disponibles</option><option value="usada">Usadas</option><option value="vencida">Vencidas</option></select>
             <button class="btn green" id="xlsxCodes">⬇ Exportar claves</button>
           </div>
         </div>
@@ -458,34 +460,40 @@ function openReportModal(l){
 }
 
 /* ===== CLAVES ===== */
+function isExpired(c){ return !c.used && c.expires_at && new Date(c.expires_at) < new Date(); }
 function filteredCodes(){
   const q=(document.getElementById('searchCodes').value||'').toLowerCase().trim();
   const f=document.getElementById('filterCodes').value;
   return CODES.filter(c=>{
     if(f==='pago'&&c.tipo!=='pago') return false;
     if(f==='cortesia'&&c.tipo!=='cortesia') return false;
-    if(f==='disponible'&&c.used) return false;
+    if(f==='disponible'&&(c.used||isExpired(c))) return false;
     if(f==='usada'&&!c.used) return false;
+    if(f==='vencida'&&!isExpired(c)) return false;
     if(q&&!((c.code||'').toLowerCase().includes(q)||(c.nota||'').toLowerCase().includes(q))) return false;
     return true;
   });
 }
 function renderCodes(){
   const rows=filteredCodes();
-  let h='<tr><th>Clave</th><th>Tipo</th><th>Estado</th><th>Usada por</th><th>Fecha uso</th><th>Nota</th><th></th></tr>';
-  if(!rows.length){ document.getElementById('codesTable').innerHTML=h+'<tr><td colspan="7"><div class="empty">Sin claves. Genera algunas arriba.</div></td></tr>'; return; }
+  let h='<tr><th>Clave</th><th>Tipo</th><th>Estado</th><th>Usada por</th><th>Vence</th><th>Fecha uso</th><th>Nota</th><th></th></tr>';
+  if(!rows.length){ document.getElementById('codesTable').innerHTML=h+'<tr><td colspan="8"><div class="empty">Sin claves. Genera algunas arriba.</div></td></tr>'; return; }
   rows.forEach(c=>{
     const tipo=c.tipo==='cortesia'?'<span class="badge b-gold">Cortesía</span>':'<span class="badge b-org">Pago</span>';
-    const estado=c.used?'<span class="badge b-mut">Usada</span>':'<span class="badge b-green">Disponible</span>';
+    const exp=isExpired(c);
+    const estado=c.used?'<span class="badge b-mut">Usada</span>':(exp?'<span class="badge b-red">Vencida</span>':'<span class="badge b-green">Disponible</span>');
     const quien=c.used?((leadsByCode[c.code]&&leadsByCode[c.code].nombre)||'—'):'—';
+    const vence=c.expires_at?('<span'+(exp?' style="color:var(--red)"':'')+'>'+fdate(c.expires_at)+'</span>'):'—';
+    const canReset=c.used||exp;
     h+='<tr>'+
       '<td style="font-family:var(--cond);font-weight:700">'+esc(c.code)+'</td>'+
       '<td>'+tipo+'</td>'+
       '<td>'+estado+'</td>'+
       '<td>'+esc(quien)+'</td>'+
+      '<td>'+vence+'</td>'+
       '<td>'+(c.used?fdateShort(c.used_at):'—')+'</td>'+
       '<td>'+esc(c.nota||'—')+'</td>'+
-      '<td>'+(c.used?'<span class="mini-a" data-reset="'+esc(c.code)+'">Resetear</span>':'<span class="mini-a off">—</span>')+'</td>'+
+      '<td>'+(canReset?'<span class="mini-a" data-reset="'+esc(c.code)+'">'+(c.used?'Resetear':'Reactivar')+'</span>':'<span class="mini-a off">—</span>')+'</td>'+
     '</tr>';
   });
   const t=document.getElementById('codesTable'); t.innerHTML=h;
@@ -496,13 +504,28 @@ function randCode(){
   const pick=n=>Array.from({length:n},()=>A[Math.floor(Math.random()*A.length)]).join('');
   return 'BNK-'+pick(4)+'-'+pick(3);
 }
+const genVig=document.getElementById('genVig'), genVigValWrap=document.getElementById('genVigValWrap'), genVigVal=document.getElementById('genVigVal'), genVigValLbl=document.getElementById('genVigValLbl');
+genVig.onchange=()=>{
+  const v=genVig.value;
+  if(v==='none'){ genVigValWrap.style.display='none'; }
+  else if(v==='days'){ genVigValWrap.style.display=''; genVigValLbl.textContent='Días'; genVigVal.type='number'; genVigVal.min='1'; if(!/^\d+$/.test(genVigVal.value)) genVigVal.value='3'; }
+  else { genVigValWrap.style.display=''; genVigValLbl.textContent='Hasta (fecha)'; genVigVal.type='date'; genVigVal.value=''; }
+};
+function calcExpiresAt(){
+  const v=genVig.value;
+  if(v==='days'){ const n=parseInt(genVigVal.value)||0; return n>0?new Date(Date.now()+n*86400000).toISOString():null; }
+  if(v==='date'){ const ds=genVigVal.value; return ds?new Date(ds+'T23:59:59').toISOString():null; }
+  return null;
+}
 document.getElementById('genBtn').onclick=async()=>{
   const qty=Math.max(1,Math.min(500,parseInt(document.getElementById('genQty').value)||0));
   const tipo=document.getElementById('genTipo').value;
   const nota=document.getElementById('genNota').value.trim()||null;
+  const expires_at=calcExpiresAt();
+  if(genVig.value!=='none'&&!expires_at){ toast('Indica los días o la fecha de vigencia (o elige "No vence").'); return; }
   const existentes=new Set(CODES.map(c=>c.code));
   const nuevos=[]; const set=new Set();
-  while(nuevos.length<qty){ const c=randCode(); if(existentes.has(c)||set.has(c)) continue; set.add(c); nuevos.push({code:c,tipo,nota}); }
+  while(nuevos.length<qty){ const c=randCode(); if(existentes.has(c)||set.has(c)) continue; set.add(c); nuevos.push({code:c,tipo,nota,expires_at}); }
   const b=document.getElementById('genBtn'); const old=b.textContent; b.textContent='Generando...'; b.disabled=true;
   const {error}=await sb.from('access_codes').insert(nuevos);
   b.textContent=old; b.disabled=false;
@@ -513,10 +536,10 @@ document.getElementById('genBtn').onclick=async()=>{
   exportCodesList(nuevos.map(n=>n.code)); // ofrece descargar las recién creadas
 };
 async function resetCode(code){
-  if(!confirm('¿Resetear la clave '+code+'? La persona podrá volver a contestar.')) return;
-  const {error}=await sb.from('access_codes').update({used:false,used_at:null,lead_id:null}).eq('code',code);
-  if(error){ toast('Error al resetear: '+error.message); return; }
-  toast('Clave '+code+' reseteada.'); await loadData();
+  if(!confirm('¿Reactivar la clave '+code+'? Quedará disponible otra vez y sin vencimiento.')) return;
+  const {error}=await sb.from('access_codes').update({used:false,used_at:null,lead_id:null,expires_at:null}).eq('code',code);
+  if(error){ toast('Error al reactivar: '+error.message); return; }
+  toast('Clave '+code+' reactivada (disponible, sin vencimiento).'); await loadData();
 }
 
 /* ===== EXPORTS ===== */
@@ -534,7 +557,7 @@ document.getElementById('xlsxLeads').onclick=()=>{ const rows=leadsAsRows(); if(
 document.getElementById('csvLeads').onclick=()=>{ const rows=leadsAsRows(); if(!rows.length){toast('No hay respuestas para exportar.');return;} const ws=XLSX.utils.json_to_sheet(rows); const csv=XLSX.utils.sheet_to_csv(ws); downloadText(csv,'RayosX-respuestas.csv'); };
 function exportCodesList(onlyCodes){
   const src=onlyCodes?CODES.filter(c=>onlyCodes.includes(c.code)):filteredCodes();
-  const rows=src.map(c=>({Clave:c.code,Tipo:c.tipo,Estado:c.used?'Usada':'Disponible','Usada por':(leadsByCode[c.code]&&leadsByCode[c.code].nombre)||'','Fecha uso':c.used?fdate(c.used_at):'',Nota:c.nota,Creada:fdate(c.created_at)}));
+  const rows=src.map(c=>({Clave:c.code,Tipo:c.tipo,Estado:c.used?'Usada':(isExpired(c)?'Vencida':'Disponible'),'Usada por':(leadsByCode[c.code]&&leadsByCode[c.code].nombre)||'',Vence:c.expires_at?fdate(c.expires_at):'','Fecha uso':c.used?fdate(c.used_at):'',Nota:c.nota,Creada:fdate(c.created_at)}));
   if(!rows.length){ toast('No hay claves para exportar.'); return; }
   const ws=XLSX.utils.json_to_sheet(rows); const wb=XLSX.utils.book_new(); XLSX.utils.book_append_sheet(wb,ws,'Claves'); XLSX.writeFile(wb,'RayosX-claves.xlsx');
 }
