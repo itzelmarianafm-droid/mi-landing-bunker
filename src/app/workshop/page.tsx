@@ -15,7 +15,7 @@ import Lotes from '@/components/workshop/Lotes';
 import FAQ from '@/components/workshop/FAQ';
 import FinalCTA from '@/components/workshop/FinalCTA';
 import Footer from '@/components/workshop/Footer';
-import StickyMobileCTA from '@/components/workshop/StickyMobileCTA';
+import StickyCTA from '@/components/workshop/StickyCTA';
 import { getLotes, getWorkshopConfig } from '@/lib/workshop/getConfig';
 import { getVslPoster } from '@/lib/workshop/poster';
 import { formatPrecio } from '@/lib/workshop/config';
@@ -67,7 +67,7 @@ export default async function WorkshopPage() {
         <FinalCTA cfg={cfg} lotes={lotes} />
       </main>
       <Footer />
-      <StickyMobileCTA cfg={cfg} lotes={lotes} />
+      <StickyCTA cfg={cfg} lotes={lotes} />
     </div>
   );
 }
