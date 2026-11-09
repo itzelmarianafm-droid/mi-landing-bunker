@@ -1,61 +1,48 @@
-import Reveal from './Reveal';
-import CtaButton from './CtaButton';
-import Countdown from './Countdown';
-import PriceTiers from './PriceTiers';
-import type { WorkshopConfig } from '@/lib/workshop/config';
+import { formatPrecio, type LoteState, type WorkshopConfig } from '@/lib/workshop/config';
 
-export default function FinalCTA({ cfg }: { cfg: WorkshopConfig }) {
+export default function FinalCTA({ cfg, lotes }: { cfg: WorkshopConfig; lotes: LoteState }) {
+  const { actual, siguiente, ahorro } = lotes;
+  // "el precio sube" solo es cierto si hay un lote siguiente más caro.
+  const sube = actual && siguiente && ahorro !== null;
+
   return (
-    <section id="registro" className="border-t-2 border-[var(--combat)] bg-[var(--panel)] scroll-mt-20">
-      <div className="mx-auto max-w-2xl px-4 py-16 text-center sm:px-6 md:py-20">
-        <Reveal>
-          <p className="ws-eyebrow mb-3">Reserva tu lugar</p>
-          <h2 className="text-2xl font-extrabold uppercase leading-tight tracking-tight sm:text-3xl">
-            Un solo día. Un solo mensaje. El que cambia cómo prospectas.
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-[15px] leading-relaxed ws-muted">
-            El workshop es en vivo el {cfg.dateLabel.toLowerCase()} y no se repite. El precio sube por
-            lotes: entre antes y paga menos.
-          </p>
-
-          <div className="mt-7 flex justify-center">
-            <Countdown variant="full" />
+    <section className="sec dark">
+      <div className="wrap final-card">
+        <div className="ops">Última llamada</div>
+        <h2 className="big">Un solo día. Un solo mensaje. El que cambia cómo prospectas.</h2>
+        <p className="lead">
+          Puedes seguir viendo cómo otros consiguen clientes todos los días, o pasar una mañana montando tu forma de
+          prospectar.
+          {sube && ` El ${actual.label} tiene cupo y, cuando se llene, el precio sube.`}
+        </p>
+        {actual && (
+          <div className="hoyluego">
+            <div className="now">
+              <div className="lab">Hoy · {actual.label}</div>
+              <div className="amt">${formatPrecio(actual.price)}</div>
+            </div>
+            {siguiente && (
+              <div>
+                <div className="lab">Luego · {siguiente.label}</div>
+                <div className="amt">${formatPrecio(siguiente.price)}</div>
+              </div>
+            )}
           </div>
-
-          <div className="mt-6 flex justify-center">
-            <PriceTiers />
-          </div>
-
-          <p className="mx-auto mt-6 max-w-xl text-[15px] leading-relaxed ws-muted">
-            Te llevas {cfg.duration} en vivo, tu mensaje de apertura listo, una rutina para prospectar
-            todos los días y acceso a la grabación por 15 días. Y vas con garantía: si no sales con
-            algo de valor, te devolvemos tu dinero.{' '}
-            <strong className="font-bold text-[var(--text)]">
-              El único riesgo real es seguir otra semana viendo el cursor parpadear.
-            </strong>
-          </p>
-
-          {/* Garantía */}
-          <div className="mx-auto mt-8 max-w-lg rounded-xl border border-[var(--combat)]/50 bg-[var(--panel-2)] p-6 text-left">
-            <p className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.18em] text-[var(--combat)]">
-              <span aria-hidden>🛡</span> Garantía de reembolso
-            </p>
-            <p className="mt-2 text-sm leading-relaxed text-[var(--text)]">
-              Haz el workshop completo. Si no sales con algo de valor —tu mensaje, tu rutina, tu
-              claridad para prospectar— te devolvemos tu dinero. Sin letra chica.
-            </p>
-          </div>
-
-          <CtaButton withPrice className="mt-8 w-full px-8 py-5 text-base sm:w-auto sm:text-lg">
-            Reservar mi lugar
-          </CtaButton>
-          <p className="mt-3 text-xs ws-muted">
-            Acceso inmediato por correo · Grabación disponible 15 días · {cfg.dateLabel}, {cfg.timeLabel}.
-          </p>
-          <p className="mt-2 text-[11px] text-[var(--dim)]">
-            Cuando el reloj llegue a cero se cierra el registro. Antes de eso, el precio sube por lotes.
-          </p>
-        </Reveal>
+        )}
+        <div style={{ marginTop: 28 }}>
+          {actual ? (
+            <a className="btn btn-primary btn-lg" href="#reservar">
+              Asegurar mi lugar · {actual.label}
+            </a>
+          ) : (
+            <span className="btn btn-lg" aria-disabled="true">
+              Registro cerrado
+            </span>
+          )}
+        </div>
+        <p className="micro" style={{ marginTop: 14 }}>
+          Acceso inmediato por correo · Grabación 20 días · {cfg.dateLabel}, {cfg.timeLabel}.
+        </p>
       </div>
     </section>
   );

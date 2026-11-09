@@ -1,19 +1,32 @@
-import { DEFAULT_CONFIG, makeTier, type WorkshopConfig, type Tier } from './config';
+import { cache } from 'react';
+import {
+  DEFAULT_CONFIG,
+  formatFecha,
+  formatHora,
+  makeTier,
+  resolveLotes,
+  type BarraModo,
+  type LoteState,
+  type TierData,
+  type WorkshopConfig,
+  type Tier,
+} from './config';
 
 interface Row {
   event_iso?: string;
-  date_label?: string;
-  time_label?: string;
   duration?: string;
   live?: string;
   recording?: string;
   host?: string;
-  tiers?: { id: string; label: string; price: number; endIso: string }[];
+  tiers?: (Partial<TierData> & { id: string })[];
   checkout_url?: string;
   vsl_url?: string;
   currency?: string;
   tz_offset?: string;
   tz_label?: string;
+  barra_visible?: boolean | null;
+  barra_modo?: string | null;
+  umbral_quedan?: number | null;
   gracias_whatsapp_membresia?: string;
   gracias_whatsapp_vip?: string;
   gracias_whatsapp_psr?: string;
@@ -21,18 +34,25 @@ interface Row {
 
 const isUrl = (v?: string) => !!v && /^https?:\/\//.test(v);
 
+// Valor que traía la versión anterior bajo el contador; la landing nueva lo
+// muestra junto a la hora ("9:00 AM hora CDMX"), así que se traduce.
+const LEGACY_TZ_LABEL = 'Hora de la Ciudad de México';
+
 function mergeRow(row: Row): WorkshopConfig {
   const eventIso = row.event_iso || DEFAULT_CONFIG.eventIso;
+  const tzLabel =
+    !row.tz_label || row.tz_label === LEGACY_TZ_LABEL ? DEFAULT_CONFIG.tzLabel : row.tz_label;
   const tiers: Tier[] =
     Array.isArray(row.tiers) && row.tiers.length > 0
-      ? row.tiers.map((t) => makeTier(t.id, t.label, Number(t.price), t.endIso))
+      ? row.tiers.map((t) => makeTier(t))
       : DEFAULT_CONFIG.tiers;
+  const barraModo: BarraModo = row.barra_modo === 'lugares' ? 'lugares' : 'porcentaje';
 
   return {
     eventIso,
     eventMs: Date.parse(eventIso),
-    dateLabel: row.date_label || DEFAULT_CONFIG.dateLabel,
-    timeLabel: row.time_label || DEFAULT_CONFIG.timeLabel,
+    dateLabel: formatFecha(eventIso),
+    timeLabel: formatHora(eventIso, tzLabel),
     duration: row.duration || DEFAULT_CONFIG.duration,
     live: row.live || DEFAULT_CONFIG.live,
     recording: row.recording || DEFAULT_CONFIG.recording,
@@ -42,7 +62,13 @@ function mergeRow(row: Row): WorkshopConfig {
     vslUrl: isUrl(row.vsl_url) ? row.vsl_url! : DEFAULT_CONFIG.vslUrl,
     currency: row.currency || DEFAULT_CONFIG.currency,
     tzOffset: row.tz_offset || DEFAULT_CONFIG.tzOffset,
-    tzLabel: row.tz_label || DEFAULT_CONFIG.tzLabel,
+    tzLabel,
+    barraVisible: row.barra_visible === true,
+    barraModo,
+    umbralQuedan:
+      typeof row.umbral_quedan === 'number' && row.umbral_quedan >= 0
+        ? row.umbral_quedan
+        : DEFAULT_CONFIG.umbralQuedan,
     graciasWhatsappMembresia: isUrl(row.gracias_whatsapp_membresia)
       ? row.gracias_whatsapp_membresia!
       : DEFAULT_CONFIG.graciasWhatsappMembresia,
@@ -58,8 +84,9 @@ function mergeRow(row: Row): WorkshopConfig {
 /**
  * Lee la configuración del workshop desde Supabase (tabla workshop_config, id=1).
  * Si no hay Supabase o falla, devuelve los valores por defecto (nunca rompe).
+ * Memoizada por request: la página y su metadata comparten una sola lectura.
  */
-export async function getWorkshopConfig(): Promise<WorkshopConfig> {
+export const getWorkshopConfig = cache(async (): Promise<WorkshopConfig> => {
   const url = process.env.SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
   if (!url || !key) return DEFAULT_CONFIG;
@@ -76,4 +103,12 @@ export async function getWorkshopConfig(): Promise<WorkshopConfig> {
   } catch {
     return DEFAULT_CONFIG;
   }
-}
+});
+
+/**
+ * Estado de los lotes en este request (lote activo, siguiente, barra).
+ * Memoizado: la página y su metadata ven exactamente el mismo estado.
+ */
+export const getLotes = cache(async (): Promise<LoteState> =>
+  resolveLotes(await getWorkshopConfig(), Date.now())
+);
