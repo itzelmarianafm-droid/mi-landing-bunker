@@ -2,7 +2,7 @@ import Image from 'next/image';
 
 const ENTRENADORES = [
   {
-    foto: '/trainers/paco.jpg',
+    foto: '/trainers/paco-anguiano.jpg',
     nombre: 'Paco Anguiano',
     rol: 'Entrenador · Ventas',
     bio: '19 años formando equipos comerciales y líderes en México, Estados Unidos, Centroamérica y España. Autor del libro “Por supuesto que puedes vender”. Especialista en comportamiento humano, comunicación persuasiva e IA aplicada a los procesos comerciales.',
