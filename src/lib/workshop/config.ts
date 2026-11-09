@@ -10,23 +10,22 @@ import {
   GRUPO_WHATSAPP_PSR,
 } from '@/config/gracias';
 
-export type TierEstado = 'proximo' | 'activo' | 'agotado';
-
-/** Lo que se guarda de cada lote en la columna `tiers` (jsonb) de Supabase. */
+/**
+ * Lo que se guarda de cada lote en la columna `tiers` (jsonb) de Supabase.
+ * Los lotes no tienen fecha: cambian cuando se llena el cupo o cuando se
+ * cierran a mano desde el panel.
+ */
 export interface TierData {
   id: string;
-  label: string; // etiqueta visible, ej. "Lote 1"
+  label: string; // siempre "Lote N" según su orden (lo pone makeTier)
   price: number;
   cupo: number; // lugares reales del lote; 0 = sin límite (sin barra de avance)
   vendidos: number; // capturado a mano en el panel (inscripciones reales)
   cerrado: boolean; // cerrado a mano desde el panel ("cerrar lote y abrir el siguiente")
-  endIso: string; // opcional: si pasa esta fecha, el lote se cierra solo ('' = sin fecha)
   checkoutUrl: string; // opcional: link de pago de este lote ('' = usa el link global)
 }
 
-export interface Tier extends TierData {
-  endMs: number | null; // derivado de endIso
-}
+export type Tier = TierData;
 
 export type BarraModo = 'porcentaje' | 'lugares';
 
@@ -55,18 +54,15 @@ export interface WorkshopConfig {
   graciasWhatsappPsr: string; // /graciasworkshoppsr
 }
 
-export function makeTier(t: Partial<TierData> & { id: string }): Tier {
-  const endIso = t.endIso || '';
-  const endMs = endIso ? Date.parse(endIso) : NaN;
+/** `index` = posición del lote en la lista; define su nombre ("Lote 1", "Lote 2"…). */
+export function makeTier(t: Partial<TierData> & { id: string }, index: number): Tier {
   return {
     id: t.id,
-    label: t.label || '',
+    label: `Lote ${index + 1}`,
     price: Number(t.price) || 0,
     cupo: Math.max(0, Math.floor(Number(t.cupo) || 0)),
     vendidos: Math.max(0, Math.floor(Number(t.vendidos) || 0)),
     cerrado: t.cerrado === true,
-    endIso,
-    endMs: Number.isNaN(endMs) ? null : endMs,
     checkoutUrl: t.checkoutUrl || '',
   };
 }
@@ -120,8 +116,8 @@ export const DEFAULT_CONFIG: WorkshopConfig = {
   recording: 'Grabación 20 días',
   host: 'Paco Anguiano y Mariana Franco',
   tiers: [
-    makeTier({ id: 'lote1', label: 'Lote 1', price: 9 }),
-    makeTier({ id: 'lote2', label: 'Lote 2', price: 17 }),
+    makeTier({ id: 'lote1', price: 9 }, 0),
+    makeTier({ id: 'lote2', price: 17 }, 1),
   ],
   checkoutUrl: 'https://pay.hotmart.com/A107551806Y?checkoutMode=10',
   vslUrl: 'https://player.vimeo.com/video/1225523227',
@@ -140,25 +136,18 @@ export const DEFAULT_CONFIG: WorkshopConfig = {
 // Lotes: cuál está activo y por qué los demás no.
 // ---------------------------------------------------------------------
 
-export type MotivoCierre = 'cerrado' | 'lleno' | 'vencido';
+export type MotivoCierre = 'cerrado' | 'lleno';
 
 /** Por qué un lote ya no se vende, o null si sigue abierto. */
-export function motivoCierre(t: Tier, now: number): MotivoCierre | null {
+export function motivoCierre(t: Tier): MotivoCierre | null {
   if (t.cerrado) return 'cerrado';
   if (t.cupo > 0 && t.vendidos >= t.cupo) return 'lleno';
-  if (t.endMs !== null && now >= t.endMs) return 'vencido';
   return null;
 }
 
 /** El lote activo es el primero, en orden, que sigue abierto. */
-export function getActiveTier(tiers: Tier[], now: number): Tier | null {
-  return tiers.find((t) => motivoCierre(t, now) === null) ?? null;
-}
-
-/** Estado de cada lote (derivado, nunca se contradice con el lote activo). */
-export function estadoTier(tiers: Tier[], t: Tier, now: number): TierEstado {
-  if (motivoCierre(t, now) !== null) return 'agotado';
-  return getActiveTier(tiers, now)?.id === t.id ? 'activo' : 'proximo';
+export function getActiveTier(tiers: Tier[]): Tier | null {
+  return tiers.find((t) => motivoCierre(t) === null) ?? null;
 }
 
 export interface Barra {
@@ -176,12 +165,12 @@ export interface LoteState {
 }
 
 export function resolveLotes(cfg: WorkshopConfig, now: number): LoteState {
-  const actual = cfg.eventMs > now ? getActiveTier(cfg.tiers, now) : null;
+  const actual = cfg.eventMs > now ? getActiveTier(cfg.tiers) : null;
   if (!actual) {
     return { cerrado: true, actual: null, siguiente: null, ahorro: null, checkoutUrl: cfg.checkoutUrl, barra: null };
   }
   const idx = cfg.tiers.indexOf(actual);
-  const siguiente = cfg.tiers.slice(idx + 1).find((t) => motivoCierre(t, now) === null) ?? null;
+  const siguiente = cfg.tiers.slice(idx + 1).find((t) => motivoCierre(t) === null) ?? null;
   const ahorro = siguiente && siguiente.price > actual.price ? siguiente.price - actual.price : null;
   const barra =
     cfg.barraVisible && actual.cupo > 0

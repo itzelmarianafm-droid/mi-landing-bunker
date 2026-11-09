@@ -15,20 +15,24 @@ incluye, FAQ y última llamada). La zona que va junto a la hora es `tz_label`
 
 ## Lotes
 
-Cada lote vive en la columna jsonb `tiers`:
+Cada lote vive en la columna jsonb `tiers`. **Los lotes no tienen fecha**:
+cambian cuando se llena el cupo o cuando se cierran a mano.
 
 | campo | qué es |
 |---|---|
-| `label` | etiqueta visible ("Lote 1") |
+| `label` | siempre "Lote N" según su orden (no se edita) |
 | `price` | precio |
 | `cupo` | lugares reales; 0 = sin límite (sin barra) |
 | `vendidos` | inscripciones pagadas, capturadas a mano desde Hotmart |
 | `cerrado` | cerrado a mano ("Cerrar lote y abrir el siguiente") |
-| `endIso` | opcional: el lote se cierra solo en esa fecha |
 | `checkoutUrl` | opcional: link de pago del lote (si no, el general) |
 
-Se vende el **primer lote, en orden, que no esté cerrado, lleno ni vencido**.
-El estado (activo / próximo / agotado) se deriva de ahí; no se guarda aparte.
+Se vende el **primer lote, en orden, que no esté cerrado ni lleno**. El estado
+(activo / próximo / agotado) se deriva de ahí; no se guarda aparte.
+
+Filas guardadas por versiones anteriores pueden traer `endIso` por lote: si
+esa fecha ya pasó, el lote se lee como cerrado; si no, se ignora. Al guardar
+desde el panel, `endIso` desaparece.
 
 ## Barra de avance — requiere SQL una sola vez
 

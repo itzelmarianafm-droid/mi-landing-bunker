@@ -6,12 +6,10 @@ export const runtime = 'nodejs';
 
 interface TierIn {
   id?: string;
-  label?: string;
   price?: number | string;
   cupo?: number | string;
   vendidos?: number | string;
   cerrado?: boolean;
-  endIso?: string;
   checkoutUrl?: string;
 }
 
@@ -31,18 +29,18 @@ export async function POST(req: Request) {
     return Response.json({ ok: false, error: 'invalid_json' }, { status: 400 });
   }
 
-  // Normaliza los lotes (se guardan en la columna jsonb `tiers`)
+  // Normaliza los lotes (se guardan en la columna jsonb `tiers`). Sin fechas:
+  // cambian por cupo o a mano. El nombre sale del orden ("Lote 1", "Lote 2"…).
   const tiersIn = Array.isArray(body.tiers) ? (body.tiers as TierIn[]) : [];
   const tiers = tiersIn
-    .filter((t) => t && t.label)
+    .filter((t) => t && typeof t === 'object')
     .map((t, i) => ({
       id: t.id || `lote-${i + 1}`,
-      label: String(t.label),
+      label: `Lote ${i + 1}`,
       price: Number(t.price) || 0,
       cupo: toInt(t.cupo),
       vendidos: toInt(t.vendidos),
       cerrado: t.cerrado === true,
-      endIso: String(t.endIso || ''),
       checkoutUrl: String(t.checkoutUrl || ''),
     }));
 

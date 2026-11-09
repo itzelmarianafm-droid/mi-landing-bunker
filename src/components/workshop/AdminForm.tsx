@@ -31,19 +31,16 @@ const TIMEZONES = [
 
 interface TierState {
   id: string;
-  label: string;
   price: string;
   cupo: string;
   vendidos: string;
   cerrado: boolean;
-  endLocal: string;
   checkoutUrl: string;
 }
 
 const MOTIVO: Record<string, string> = {
   cerrado: 'Cerrado a mano',
   lleno: 'Lleno',
-  vencido: 'Venció la fecha',
 };
 
 export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
@@ -62,12 +59,10 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
   const [tiers, setTiers] = useState<TierState[]>(
     initial.tiers.map((t) => ({
       id: t.id,
-      label: t.label,
       price: String(t.price),
       cupo: t.cupo ? String(t.cupo) : '',
       vendidos: String(t.vendidos),
       cerrado: t.cerrado,
-      endLocal: isoToLocal(t.endIso),
       checkoutUrl: t.checkoutUrl,
     }))
   );
@@ -85,19 +80,20 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
   }, []);
 
   const eventIso = localToIso(eventLocal, tzOffset);
-  const toTier = (t: TierState): Tier =>
-    makeTier({
-      id: t.id,
-      label: t.label,
-      price: Number(t.price),
-      cupo: Number(t.cupo),
-      vendidos: Number(t.vendidos),
-      cerrado: t.cerrado,
-      endIso: localToIso(t.endLocal, tzOffset),
-      checkoutUrl: t.checkoutUrl,
-    });
+  const toTier = (t: TierState, i: number): Tier =>
+    makeTier(
+      {
+        id: t.id,
+        price: Number(t.price),
+        cupo: Number(t.cupo),
+        vendidos: Number(t.vendidos),
+        cerrado: t.cerrado,
+        checkoutUrl: t.checkoutUrl,
+      },
+      i
+    );
   const liveTiers = tiers.map(toTier);
-  const activeTier = now !== null ? getActiveTier(liveTiers, now) : null;
+  const activeTier = getActiveTier(liveTiers);
   const eventPast = now !== null && !!eventIso && Date.parse(eventIso) < now;
   const preview =
     now !== null
@@ -124,12 +120,10 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
       ...prev,
       {
         id: `lote-${Date.now()}`,
-        label: `Lote ${prev.length + 1}`,
         price: '',
         cupo: '',
         vendidos: '0',
         cerrado: false,
-        endLocal: '',
         checkoutUrl: '',
       },
     ]);
@@ -164,12 +158,10 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
       umbralQuedan: Number(umbralQuedan) || 0,
       tiers: liveTiers.map((t) => ({
         id: t.id,
-        label: t.label,
         price: t.price,
         cupo: t.cupo,
         vendidos: t.vendidos,
         cerrado: t.cerrado,
-        endIso: t.endIso,
         checkoutUrl: t.checkoutUrl,
       })),
     };
@@ -270,7 +262,7 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
             ⚠ La landing muestra <strong>&ldquo;Registro cerrado&rdquo;</strong>:{' '}
             {eventPast
               ? 'la fecha del evento ya pasó. Actualiza el evento a una fecha futura.'
-              : 'ningún lote está abierto (todos están cerrados, llenos o vencidos).'}
+              : 'ningún lote está abierto (todos están cerrados o llenos).'}
           </div>
         )}
 
@@ -288,35 +280,29 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
         <div className="space-y-4">
           {tiers.map((t, i) => {
             const tier = liveTiers[i];
-            const motivo = now !== null ? motivoCierre(tier, now) : null;
+            const motivo = motivoCierre(tier);
             const isActive = activeTier?.id === tier.id;
             return (
               <div key={t.id} className="rounded-lg border border-[var(--line)] bg-[var(--panel-2)] p-4">
                 <div className="mb-3 flex items-center justify-between gap-3">
                   <span className="flex items-center gap-2">
-                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--combat)]">#{i + 1}</span>
-                    {now !== null && (
-                      <span
-                        className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
-                        style={
-                          isActive
-                            ? { background: 'var(--combat)', color: '#0B0B0B' }
-                            : { border: '1px solid var(--line-strong)', color: 'var(--muted)' }
-                        }
-                      >
-                        {isActive ? 'Activo' : motivo ? `Agotado · ${MOTIVO[motivo]}` : 'Próximo'}
-                      </span>
-                    )}
+                    <span className="text-xs font-bold uppercase tracking-wider text-[var(--combat)]">{tier.label}</span>
+                    <span
+                      className="rounded px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider"
+                      style={
+                        isActive
+                          ? { background: 'var(--combat)', color: '#0B0B0B' }
+                          : { border: '1px solid var(--line-strong)', color: 'var(--muted)' }
+                      }
+                    >
+                      {isActive ? 'Activo' : motivo ? `Agotado · ${MOTIVO[motivo]}` : 'Próximo'}
+                    </span>
                   </span>
                   <button onClick={() => removeTier(i)} className="text-xs text-[var(--dim)] hover:text-[#E0A62A]">
                     Eliminar
                   </button>
                 </div>
-                <div className="grid gap-3 sm:grid-cols-2">
-                  <div>
-                    <label className={label}>Etiqueta</label>
-                    <input className={input} value={t.label} onChange={(e) => updateTier(i, 'label', e.target.value)} placeholder="Lote 1" />
-                  </div>
+                <div className="grid gap-3 sm:grid-cols-3">
                   <div>
                     <label className={label}>Precio ({currency})</label>
                     <input type="number" min="0" className={input} value={t.price} onChange={(e) => updateTier(i, 'price', e.target.value)} placeholder="9" />
@@ -331,21 +317,12 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
                     <input type="number" min="0" className={input} value={t.vendidos} onChange={(e) => updateTier(i, 'vendidos', e.target.value)} />
                     <p className={hint}>Inscripciones pagadas de este lote, según Hotmart.</p>
                   </div>
-                  <div className="sm:col-span-2">
+                  <div className="sm:col-span-3">
                     <label className={label}>Link de pago de este lote (opcional)</label>
                     <input className={input} value={t.checkoutUrl} onChange={(e) => updateTier(i, 'checkoutUrl', e.target.value)} placeholder="Vacío = usa el link de pago general" />
                   </div>
-                  <div>
-                    <label className={label}>Cerrar automáticamente el (opcional)</label>
-                    <input type="datetime-local" className={input} value={t.endLocal} onChange={(e) => updateTier(i, 'endLocal', e.target.value)} />
-                    {t.endLocal && (
-                      <button onClick={() => updateTier(i, 'endLocal', '')} className="mt-1 text-[11px] text-[var(--combat)]">
-                        Quitar fecha
-                      </button>
-                    )}
-                  </div>
-                  <div className="flex items-end">
-                    <label className="flex cursor-pointer items-center gap-2 pb-2.5 text-sm text-[var(--text)]">
+                  <div className="sm:col-span-3">
+                    <label className="flex cursor-pointer items-center gap-2 text-sm text-[var(--text)]">
                       <input type="checkbox" checked={t.cerrado} onChange={(e) => updateTier(i, 'cerrado', e.target.checked)} className="h-4 w-4 accent-[var(--combat)]" />
                       Lote cerrado
                     </label>
@@ -359,8 +336,8 @@ export default function AdminForm({ initial }: { initial: WorkshopConfig }) {
           + Agregar lote
         </button>
         <p className={hint}>
-          Se vende el primer lote, en orden, que no esté cerrado, lleno ni vencido. La landing muestra ese lote y el
-          siguiente.
+          Los lotes no tienen fecha: se vende el primer lote, en orden, que no esté cerrado ni lleno. Cuando se llena
+          (o lo cierras con el botón), se abre el siguiente. La landing muestra ese lote y el siguiente.
         </p>
       </section>
 

@@ -18,7 +18,7 @@ interface Row {
   live?: string;
   recording?: string;
   host?: string;
-  tiers?: (Partial<TierData> & { id: string })[];
+  tiers?: (Partial<TierData> & { id: string; endIso?: string })[];
   checkout_url?: string;
   vsl_url?: string;
   currency?: string;
@@ -34,17 +34,27 @@ interface Row {
 
 const isUrl = (v?: string) => !!v && /^https?:\/\//.test(v);
 
+// Los lotes ya no se cierran por fecha. Lotes guardados por versiones
+// anteriores pueden traer `endIso`: si esa fecha ya pasó, el lote se trata
+// como cerrado (así no se reabre un precio viejo); si no, se ignora.
+// Al guardar desde el panel, `endIso` desaparece de la fila.
+function legacyCerrado(t: { cerrado?: boolean; endIso?: string }, now: number) {
+  if (t.cerrado === true) return true;
+  const end = t.endIso ? Date.parse(t.endIso) : NaN;
+  return !Number.isNaN(end) && end <= now;
+}
+
 // Valor que traía la versión anterior bajo el contador; la landing nueva lo
 // muestra junto a la hora ("9:00 AM hora CDMX"), así que se traduce.
 const LEGACY_TZ_LABEL = 'Hora de la Ciudad de México';
 
-function mergeRow(row: Row): WorkshopConfig {
+function mergeRow(row: Row, now: number): WorkshopConfig {
   const eventIso = row.event_iso || DEFAULT_CONFIG.eventIso;
   const tzLabel =
     !row.tz_label || row.tz_label === LEGACY_TZ_LABEL ? DEFAULT_CONFIG.tzLabel : row.tz_label;
   const tiers: Tier[] =
     Array.isArray(row.tiers) && row.tiers.length > 0
-      ? row.tiers.map((t) => makeTier(t))
+      ? row.tiers.map((t, i) => makeTier({ ...t, cerrado: legacyCerrado(t, now) }, i))
       : DEFAULT_CONFIG.tiers;
   const barraModo: BarraModo = row.barra_modo === 'lugares' ? 'lugares' : 'porcentaje';
 
@@ -99,7 +109,7 @@ export const getWorkshopConfig = cache(async (): Promise<WorkshopConfig> => {
     if (!res.ok) return DEFAULT_CONFIG;
     const rows = (await res.json()) as Row[];
     if (!Array.isArray(rows) || rows.length === 0) return DEFAULT_CONFIG;
-    return mergeRow(rows[0]);
+    return mergeRow(rows[0], Date.now());
   } catch {
     return DEFAULT_CONFIG;
   }
