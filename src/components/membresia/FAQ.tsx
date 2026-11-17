@@ -53,12 +53,9 @@ export default function FAQ() {
               El anual, sin duda. Pagas 10 meses y recibes 12 (te ahorras $1,094
               MXN, ~$60 USD), y además sumas bonos que el mensual no incluye
               —diagnóstico Rayos X con mentoría 1 a 1, herramienta de contenido
-              con IA, clase de tráfico pago, pase al evento y 15% de descuento
-              de por vida—, que por separado valen más de $30,000 MXN. De hecho,
-              uno solo de los regalos de hoy, tu Página Imán hecha por nosotros
-              ($9,900 MXN), ya vale más que la membresía anual completa ($5,470
-              MXN). Si vas en serio con tu salto de ingresos, el anual se paga
-              solo.
+              con IA, clase de tráfico pago y 15% de descuento de por vida—, que
+              por separado valen más de $9,000 MXN. Si vas en serio con tu
+              salto de ingresos, el anual se paga solo.
             </p>
           </details>
           <details>

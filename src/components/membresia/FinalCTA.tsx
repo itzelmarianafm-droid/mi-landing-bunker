@@ -1,5 +1,4 @@
 import CtaButton from './CtaButton';
-import { TODAY_GIFTS_MXN, mxn, usd } from '@/config/offer';
 
 export default function FinalCTA() {
   return (
@@ -12,15 +11,7 @@ export default function FinalCTA() {
           El único riesgo real es seguir otra semana improvisando, perdiendo
           ventas y viendo caer tus ingresos.
         </h2>
-        <div className="urg">
-          Solo hoy · los primeros 6 del anual se llevan su Página Imán hecha por
-          nosotros
-        </div>
-        <div className="more">
-          Solo los regalos de hoy valen {mxn(TODAY_GIFTS_MXN)} MXN (≈ $
-          {usd(TODAY_GIFTS_MXN)} USD): más de 4 veces lo que cuesta el anual.
-        </div>
-        <div style={{ marginTop: 16 }}>
+        <div style={{ marginTop: 24 }}>
           <CtaButton action="scroll" className="lg">
             Entrar a la membresía
           </CtaButton>

@@ -58,7 +58,7 @@ export type ValueItem = {
 };
 
 export type ValueGroup = {
-  key: "nucleo" | "anual" | "accion";
+  key: "nucleo" | "anual";
   title: string;
   /** Nota acumulativa que se muestra arriba del grupo (.gsub). */
   cumulativeNote?: string;
@@ -190,47 +190,10 @@ export const VALUE_STACK: ValueGroup[] = [
       },
     ],
   },
-  {
-    key: "accion",
-    title: "Regalos para los primeros 6 que paguen el anual hoy",
-    cumulativeNote:
-      "Todo lo anterior, más (solo para los primeros 6 que paguen el anual hoy):",
-    stackBadge: "Hoy · primeros 6",
-    planNote: "hoy · primeros 6",
-    items: [
-      {
-        name: "Tu Página Imán, hecha por nosotros",
-        benefit: "Nosotros te la creamos y construimos. Tuya por 1 año.",
-        smallprint:
-          "*La edición del video y el dominio personalizado no se incluyen; corren por cuenta del alumno si quiere la página con esas características.",
-        valueMXN: 9900,
-        tooltip:
-          "El activo que casi nadie tiene y todos necesitan: una página que atrae, educa y filtra por ti, trabajando las 24 horas. Nosotros la pensamos, la escribimos y la construimos; tú solo la usas para que te lleguen prospectos mientras haces tu vida.",
-      },
-      {
-        name: "Mentoría 1 a 1 bimestral + «WhatsApp 911»",
-        benefit: "2 h uno a uno cada bimestre + WhatsApp directo L–V.",
-        valueMXN: 7900,
-        tooltip:
-          "Imagina tener a tus mentores a un mensaje de distancia. Cada dos meses te sientas dos horas, uno a uno, a trabajar tu caso a fondo con Paco y Mariana. Y en el día a día, tu «WhatsApp 911» de lunes a viernes en horario hábil para resolver las dudas menores al instante. Dejas de resolver a ciegas lo que alguien con experiencia te contesta en minutos.",
-      },
-      {
-        name: "Pase al evento La Logia Mastermind",
-        benefit:
-          "Entrada al evento presencial anual. Para los primeros 6 que pagan el anual hoy.",
-        valueMXN: 4997,
-        tooltip:
-          "Un día al año, en persona, rodeado de gente que va para el mismo lado. Conferencias de los mejores, conexiones que valen oro y la energía que te recarga para los siguientes doce meses. Lo que pasa en esa sala no se consigue detrás de una pantalla.",
-      },
-    ],
-  },
 ];
 
 /** Ancla: valor real sumado. Se muestra tachado frente al precio. */
-export const ANCHOR_TOTAL_MXN = 75094;
-
-/** Regalos de hoy (para el CTA final): su valor sumado. */
-export const TODAY_GIFTS_MXN = 22797;
+export const ANCHOR_TOTAL_MXN = 52297;
 
 export type Plan = {
   key: "mensual" | "anual";
@@ -276,7 +239,7 @@ export const PLANS: Plan[] = [
     priceMXN: 5470,
     listMXN: 6564,
     priceSuffix: "MXN / año",
-    usdLine: "≈ $300 USD / año · 2 meses gratis + regalos exclusivos",
+    usdLine: "≈ $300 USD / año · 2 meses gratis + bonos exclusivos",
     save: "Ahorras $1,094 + bonos solo anual",
     recommended: true,
     ctaTop: "Quiero el anual con todos los bonos",
