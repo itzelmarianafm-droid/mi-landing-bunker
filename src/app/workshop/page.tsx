@@ -16,6 +16,7 @@ import FAQ from '@/components/workshop/FAQ';
 import FinalCTA from '@/components/workshop/FinalCTA';
 import Footer from '@/components/workshop/Footer';
 import StickyCTA from '@/components/workshop/StickyCTA';
+import MetaPixel from '@/components/workshop/MetaPixel';
 import { getLotes, getWorkshopConfig } from '@/lib/workshop/getConfig';
 import { getVslPoster } from '@/lib/workshop/poster';
 import { formatPrecio } from '@/lib/workshop/config';
@@ -49,6 +50,7 @@ export default async function WorkshopPage() {
 
   return (
     <div className="psr">
+      <MetaPixel />
       <Header cfg={cfg} lotes={lotes} />
       <main>
         <Hero cfg={cfg} lotes={lotes} vslPoster={vslPoster} />
